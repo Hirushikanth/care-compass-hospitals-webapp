@@ -17,6 +17,9 @@ if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] != 'admin') {
 
 $db = new Database();
 
+// Fetch all branches for the dropdown
+$branches = $db->getAllBranches(); // Fetch branches for branch selection dropdown
+
 // Handle form submission
 if (isset($_POST['add_doctor'])) {
     $fullname = sanitize_input($_POST['fullname']);
@@ -27,6 +30,7 @@ if (isset($_POST['add_doctor'])) {
     $availability = sanitize_input($_POST['availability']);
     $phone = sanitize_input($_POST['phone']);
     $address = sanitize_input($_POST['address']);
+    $branchId = $_POST['branch_id']; // Get branch ID from form
 
     // Basic input validation (server-side)
     $errors = [];
@@ -46,6 +50,9 @@ if (isset($_POST['add_doctor'])) {
     if (empty($specialty)) {
         $errors[] = "Specialty is required.";
     }
+    if (empty($branchId)) { // Validate branch selection
+        $errors[] = "Branch is required.";
+    }
     // Add more server-side validation as needed
 
     // Check if email already exists (only if it's not empty and valid)
@@ -64,8 +71,8 @@ if (isset($_POST['add_doctor'])) {
         $user_id = $db->createUser($fullname, $email, $hashedPassword, 'staff', $phone, $address);
 
         if ($user_id) {
-            // Insert doctor
-            $success = $db->createDoctor($user_id, $specialty, $qualifications, $availability);
+            // Insert doctor with branch ID
+            $success = $db->createDoctor($user_id, $specialty, $qualifications, $availability, $branchId); // Pass branchId to createDoctor
 
             if ($success) {
                 echo '<div class="alert alert-success">Doctor added successfully!</div>';
@@ -215,12 +222,12 @@ if (isset($_POST['add_doctor'])) {
                         <form method="post" onsubmit="return validateForm()">
                             <div class="mb-3">
                                 <label for="fullname" class="form-label">Full Name:</label>
-                                <input type="text" class="form-control" id="fullname" name="fullname" required>
+                                <input type="text" class="form-control" id="fullname" name="fullname" value="<?= htmlspecialchars($fullname) ?>" required>
                                 <div id="fullname-error" class="text-danger"></div>
                             </div>
                             <div class="mb-3">
                                 <label for="email" class="form-label">Email:</label>
-                                <input type="email" class="form-control" id="email" name="email" required>
+                                <input type="email" class="form-control" id="email" name="email" value="<?= htmlspecialchars($email) ?>" required>
                                 <div id="email-error" class="text-danger"></div>
                             </div>
                             <div class="mb-3">
@@ -230,25 +237,35 @@ if (isset($_POST['add_doctor'])) {
                             </div>
                             <div class="mb-3">
                                 <label for="specialty" class="form-label">Specialty:</label>
-                                <input type="text" class="form-control" id="specialty" name="specialty" required>
+                                <input type="text" class="form-control" id="specialty" name="specialty" value="<?= htmlspecialchars($specialty) ?>" required>
                                 <div id="specialty-error" class="text-danger"></div>
                             </div>
                             <div class="mb-3">
+                                <label for="branch_id" class="form-label">Branch:</label>  <!-- New Branch Dropdown -->
+                                <select class="form-control" id="branch_id" name="branch_id" required>
+                                    <option value="">-- Select Branch --</option>
+                                    <?php foreach ($branches as $branch): ?>
+                                        <option value="<?= htmlspecialchars($branch['id']) ?>"><?= htmlspecialchars($branch['name']) ?></option>
+                                    <?php endforeach; ?>
+                                </select>
+                                <div id="branch-id-error" class="text-danger"></div>
+                            </div>
+                            <div class="mb-3">
                                 <label for="phone" class="form-label">Phone:</label>
-                                <input type="tel" class="form-control" id="phone" name="phone">
+                                <input type="tel" class="form-control" id="phone" name="phone" value="<?= htmlspecialchars($phone) ?>">
                                 <div id="phone-error" class="text-danger"></div>
                             </div>
                             <div class="mb-3">
                                 <label for="address" class="form-label">Address:</label>
-                                <textarea class="form-control" id="address" name="address"></textarea>
+                                <textarea class="form-control" id="address" name="address"><?= htmlspecialchars($address) ?></textarea>
                             </div>
                             <div class="mb-3">
                                 <label for="qualifications" class="form-label">Qualifications:</label>
-                                <textarea class="form-control" id="qualifications" name="qualifications"></textarea>
+                                <textarea class="form-control" id="qualifications" name="qualifications"><?= htmlspecialchars($qualifications) ?></textarea>
                             </div>
                             <div class="mb-3">
                                 <label for="availability" class="form-label">Availability:</label>
-                                <textarea class="form-control" id="availability" name="availability"></textarea>
+                                <textarea class="form-control" id="availability" name="availability"><?= htmlspecialchars($availability) ?></textarea>
                             </div>
 
                             <div class="d-grid gap-2">
@@ -270,6 +287,7 @@ if (isset($_POST['add_doctor'])) {
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
             const specialty = document.getElementById('specialty').value;
+            const branchId = document.getElementById('branch_id').value; // Get branch ID
             const phone = document.getElementById('phone').value;
 
             // Reset error messages
@@ -277,6 +295,7 @@ if (isset($_POST['add_doctor'])) {
             document.getElementById('email-error').innerText = '';
             document.getElementById('password-error').innerText = '';
             document.getElementById('specialty-error').innerText = '';
+            document.getElementById('branch-id-error').innerText = ''; // Reset branch error
             document.getElementById('phone-error').innerText = '';
 
             // Full name validation
@@ -308,6 +327,12 @@ if (isset($_POST['add_doctor'])) {
                 document.getElementById('specialty-error').innerText = 'Specialty is required.';
                 isValid = false;
             }
+             // Branch validation
+             if (branchId === '') {
+                document.getElementById('branch-id-error').innerText = 'Branch is required.'; // Branch error message
+                isValid = false;
+            }
+
 
             // Phone number validation (basic example, adjust regex as needed)
             if (phone.trim() !== '' && !/^\d{10}$/.test(phone)) {

@@ -1,0 +1,939 @@
+/* style.css - Main Stylesheet for Care Compass Connect */
+
+:root {
+    --primary-teal: #046A7A;
+    --light-background: #f0f8ff;
+    --secondary-light-teal: #cce8ed;
+    --darker-teal: #034e5a;
+    --text-color: #343a40;
+    --border-color: #e9ecef;
+}
+
+body {
+    font-family: 'Nunito', sans-serif;
+    color: var(--text-color);
+    background-color: var(--light-background);
+    line-height: 1.7;
+}
+
+/* Typography */
+h1, h2, h3, h4, h5, h6 {
+    font-weight: 700;
+    color: var(--primary-teal);
+}
+
+/* Links */
+a {
+    color: var(--primary-teal);
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+a:hover {
+    color: var(--darker-teal);
+    text-decoration: underline;
+}
+
+/* Spacing and Padding */
+.py-5 {
+    padding-top: 3rem !important;
+    padding-bottom: 3rem !important;
+}
+
+.mb-4 {
+    margin-bottom: 1.5rem !important;
+}
+
+.mb-5 {
+    margin-bottom: 3rem !important;
+}
+
+/* Hero Section */
+.hero-section {
+    background: linear-gradient(rgba(4, 106, 122, 0.6), rgba(4, 106, 122, 0.1)), url('/care-compass/assets/images/Hero.jpg');
+    background-size: cover;
+    background-position: center;
+    color: white;
+    padding: 120px 0;
+    text-align: center;
+}
+
+.hero-section h1 {
+    font-size: 3rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+.hero-section p {
+    font-size: 1.2rem;
+    margin-bottom: 2rem;
+    opacity: 0.9;
+}
+
+.hero-section .btn-light {
+    background-color: white;
+    color: var(--primary-teal);
+    border: none;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.hero-section .btn-light:hover {
+    background-color: var(--secondary-light-teal);
+    color: var(--primary-teal);
+}
+
+.hero-section .btn-danger {
+    background-color: #dc3545;
+    border: none;
+}
+
+.emergency-contact {
+    background-color: #dc3545;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 25px;
+    font-weight: bold;
+    margin-top: 2rem;
+    display: inline-block;
+}
+
+/* Navigation Bar */
+.navbar {
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+}
+
+.navbar-brand img {
+    max-height: 60px;
+}
+
+.navbar-nav .nav-link {
+    color: var(--text-color);
+    margin-left: 1rem;
+    margin-right: 1rem;
+    transition: color 0.3s ease;
+}
+
+.navbar-nav .nav-link:hover,
+.navbar-nav .nav-link.active {
+    color: var(--primary-teal);
+}
+
+.navbar-nav .btn-primary {
+    background-color: var(--primary-teal);
+    border-color: var(--primary-teal);
+    color: white;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.navbar-nav .btn-primary:hover {
+    background-color: var(--darker-teal);
+    border-color: var(--darker-teal);
+}
+
+/* Key Highlights Section */
+.bg-light {
+    background-color: var(--light-background) !important;
+}
+
+.service-card {
+    transition: transform 0.3s;
+    border: none;
+    border-radius: 0.75rem;
+    box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.08);
+    padding: 1.5rem;
+    background-color: #fff;
+}
+
+.service-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.12);
+}
+
+.service-card i {
+    color: var(--primary-teal);
+}
+
+.service-card h3 {
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+}
+
+.service-card p {
+    color: var(--text-color);
+    opacity: 0.8;
+}
+
+.service-card .btn-outline-primary {
+    color: var(--primary-teal);
+    border-color: var(--primary-teal);
+    transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+}
+
+.service-card .btn-outline-primary:hover {
+    background-color: var(--secondary-light-teal);
+    border-color: var(--primary-teal);
+    color: var(--primary-teal);
+}
+
+/* Featured Services Section */
+.service-card img {
+    border-top-left-radius: 0.75rem;
+    border-top-right-radius: 0.75rem;
+    height: 250px;
+    object-fit: cover;
+}
+
+.service-card .card-body {
+    padding: 1.5rem;
+}
+
+.service-card .card-body h3 {
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.service-card .card-body p {
+    color: var(--text-color);
+    opacity: 0.8;
+}
+
+.service-card .btn-primary {
+    background-color: var(--primary-teal);
+    border-color: var(--primary-teal);
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.service-card .btn-primary:hover {
+    background-color: var(--darker-teal);
+    border-color: var(--darker-teal);
+}
+
+/* Testimonial Section */
+.testimonial-section {
+    background-color: var(--light-background);
+    padding-top: 4rem;
+    padding-bottom: 4rem;
+}
+
+.testimonial-section h2 {
+    margin-bottom: 3rem;
+}
+
+.testimonial-section .card {
+    border: none;
+    border-radius: 0.75rem;
+    box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.05);
+    background-color: #fff;
+}
+
+.testimonial-section .card-body {
+    padding: 1.5rem;
+}
+
+.testimonial-section .card-text {
+    margin-bottom: 1rem;
+    font-style: italic;
+    color: var(--text-color);
+    opacity: 0.9;
+}
+
+.testimonial-section .text-muted {
+    font-style: normal;
+    opacity: 1;
+}
+
+/* Facilities Section */
+.facilities-section img {
+    border-radius: 0.75rem;
+    box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.1);
+}
+
+.facilities-section h3 {
+    margin-top: 1rem;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+}
+
+.facilities-section p {
+    color: var(--text-color);
+    opacity: 0.8;
+}
+
+/* Blog Section */
+.blog-card {
+    border: none;
+    border-radius: 0.75rem;
+    box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.08);
+    background-color: #fff;
+}
+
+.blog-card img {
+    border-top-left-radius: 0.75rem;
+    border-top-right-radius: 0.75rem;
+}
+
+.blog-card .card-body {
+    padding: 1.5rem;
+}
+
+.blog-card h3 {
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.blog-card p {
+    color: var(--text-color);
+    opacity: 0.8;
+}
+
+.blog-card .btn-outline-primary {
+    color: var(--primary-teal);
+    border-color: var(--primary-teal);
+    transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+}
+
+.blog-card .btn-outline-primary:hover {
+    background-color: var(--secondary-light-teal);
+    border-color: var(--primary-teal);
+    color: var(--primary-teal);
+}
+
+/* Footer */
+.footer {
+    background-color: var(--primary-teal);
+    color: white;
+    padding-top: 3rem;
+    padding-bottom: 3rem;
+}
+
+.footer h4 {
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+}
+
+.footer p, .footer a {
+    color: rgba(255, 255, 255, 0.8);
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.footer a:hover {
+    color: white;
+}
+
+.footer .bi {
+    font-size: 1.2rem;
+    margin-right: 0.5rem;
+}
+
+.btn-primary.rounded-circle {
+    background-color: var(--primary-teal);
+    border-color: var(--primary-teal);
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.btn-primary.rounded-circle:hover {
+    background-color: var(--darker-teal);
+    border-color: var(--darker-teal);
+}
+
+.btn-primary.rounded-circle i {
+    font-size: 1.5rem;
+}
+
+/* Modal */
+.modal-header {
+    border-bottom: 1px solid var(--border-color);
+}
+
+.modal-footer {
+    border-top: 1px solid var(--border-color);
+}
+
+/* --- About Us Page Styles --- */
+.about-header {
+    background: linear-gradient(rgba(4, 106, 122, 0.7), rgba(4, 106, 122, 0.2)), url('../assets/images/AboutUsHero.jpg');
+    background-size: cover;
+    background-position: center;
+    color: white;
+    padding: 150px 0;
+    text-align: center;
+}
+
+.about-header h1 {
+    font-size: 3.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+.about-section {
+    padding: 4rem 0;
+    background-color: white;
+}
+
+.about-section h2 {
+    color: var(--primary-teal);
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+}
+
+.about-section p {
+    font-size: 1.1rem;
+    color: var(--text-color);
+    opacity: 0.9;
+}
+
+.core-values {
+    padding: 3rem 0;
+    background-color: var(--light-background);
+}
+
+.core-values h2 {
+    color: var(--primary-teal);
+    font-weight: 700;
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.core-value-item {
+    text-align: center;
+    padding: 1.5rem;
+    border-radius: 0.75rem;
+    background-color: white;
+    box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.05);
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.core-value-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.07);
+}
+
+.core-value-item i {
+    font-size: 2.5rem;
+    color: var(--primary-teal);
+    margin-bottom: 1rem;
+}
+
+.core-value-item h3 {
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+}
+
+.core-value-item p {
+    opacity: 0.8;
+}
+
+/* --- Doctors Page Styles --- */
+.doctors-header {
+    background: linear-gradient(rgba(4, 106, 122, 0.7), rgba(4, 106, 122, 0.2)), url('../assets/images/DoctorsHero.jpg');
+    background-size: cover;
+    background-position: center;
+    color: white;
+    padding: 150px 0;
+    text-align: center;
+}
+
+.doctors-header h1 {
+    font-size: 3.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+.doctors-grid {
+    padding: 4rem 0;
+    background-color: white;
+}
+
+.doctor-card {
+    border: none;
+    border-radius: 0.75rem;
+    box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.05);
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    overflow: hidden;
+    text-align: center;
+}
+
+.doctor-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.07);
+}
+
+.doctor-card img {
+    border-top-left-radius: 0.75rem;
+    border-top-right-radius: 0.75rem;
+    max-height: 200px;
+    object-fit: cover;
+}
+
+.doctor-card-body {
+    padding: 1.5rem;
+}
+
+.doctor-card-title {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--primary-teal);
+    margin-bottom: 0.5rem;
+}
+
+.doctor-card-specialty {
+    font-size: 1rem;
+    color: var(--text-color);
+    opacity: 0.8;
+}
+
+.btn-outline-primary { /* Reusing service card button style */
+    color: var(--primary-teal);
+    border-color: var(--primary-teal);
+    transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+}
+
+.btn-outline-primary:hover { /* Reusing service card button hover style */
+    background-color: var(--secondary-light-teal);
+    border-color: var(--primary-teal);
+    color: var(--primary-teal);
+}
+
+/* --- Services Page Styles --- */
+
+.services-header {
+    background-color: var(--primary-teal);
+    color: white;
+    padding: 2rem 0;
+    margin-bottom: 3rem;
+    text-align: center;
+}
+
+.services-header h2 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 0;
+}
+
+/* --- Contact Page Styles --- */
+
+.contact-header {
+    background: linear-gradient(rgba(4, 106, 122, 0.7), rgba(4, 106, 122, 0.2)), url('../assets/images/ContactHero.jpg');
+    background-size: cover;
+    background-position: center;
+    color: white;
+    padding: 150px 0;
+    text-align: center;
+}
+
+.contact-header h1 {
+    font-size: 3.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+.contact-section {
+    padding: 4rem 0;
+    background-color: white;
+}
+
+.contact-info {
+    margin-bottom: 2rem;
+}
+
+.contact-info h3 {
+    color: var(--primary-teal);
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+.contact-info p {
+    line-height: 1.8;
+    margin-bottom: 0.75rem;
+}
+
+.contact-form-card {
+    border: none;
+    border-radius: 0.75rem;
+    box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.05);
+    padding: 2rem;
+    background-color: var(--light-background);
+}
+
+.contact-form-card h3 {
+    color: var(--primary-teal);
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+}
+
+.form-label { /* Reusing existing form label style */
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+}
+
+.form-control { /* Reusing existing form control style */
+    border-radius: 0.3rem;
+}
+
+.btn-primary { /* Reusing existing primary button style */
+    background-color: var(--primary-teal);
+    border-color: var(--primary-teal);
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.btn-primary:hover { /* Reusing existing primary button hover style */
+    background-color: var(--darker-teal);
+    border-color: var(--darker-teal);
+}
+
+/* --- Blog Page Styles --- */
+.blog-section {
+    padding: 4rem 0;
+}
+
+.blog-section h2 {
+    color: var(--primary-teal);
+    margin-bottom: 3rem;
+    text-align: center;
+}
+
+.blog-card {
+    border: none;
+    border-radius: 0.75rem;
+    box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.08);
+    background-color: #fff;
+}
+
+.blog-card img {
+    border-top-left-radius: 0.75rem;
+    border-top-right-radius: 0.75rem;
+    height: 200px; /* Fixed height for blog card images */
+    object-fit: cover;
+}
+
+.blog-card .card-body {
+    padding: 1.5rem;
+}
+
+.blog-card h3 {
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: var(--primary-teal); /* Teal blog card titles */
+}
+
+.blog-card p {
+    color: var(--text-color);
+    opacity: 0.8;
+}
+
+.blog-card .btn-outline-primary { /* Reusing service card button style */
+    color: var(--primary-teal);
+    border-color: var(--primary-teal);
+    transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+}
+
+.blog-card .btn-outline-primary:hover { /* Reusing service card button hover style */
+    background-color: var(--secondary-light-teal);
+    border-color: var(--primary-teal);
+    color: var(--primary-teal);
+}
+
+/* --- Dashboard Card Styles (Admin, Staff, Patient) --- */
+.dashboard-header { /* Common dashboard header style */
+    background-color: var(--primary-teal);
+    color: white;
+    padding: 2.5rem 0;
+    margin-bottom: 3rem;
+}
+.dashboard-header h2 { /* Common dashboard header h2 style */
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 0;
+}
+.dashboard-card { /* Common dashboard card style */
+    background-color: #fff;
+    border-radius: 0.75rem;
+    box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.05);
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    overflow: hidden;
+    margin-bottom: 30px; /* Added margin bottom for dashboard cards */
+}
+.dashboard-card:hover { /* Common dashboard card hover style */
+    transform: scale(1.01);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.07);
+}
+.dashboard-card-header { /* Common dashboard card header style */
+    background-color: var(--primary-teal);
+    color: white;
+    padding: 1.25rem;
+    border-top-left-radius: 0.75rem;
+    border-top-right-radius: 0.75rem;
+}
+.dashboard-card-header h2, .dashboard-card-header h3 { /* Common dashboard card header h2 and h3 style */
+    font-size: 1.5rem;
+    margin-bottom: 0;
+    font-weight: 600;
+}
+.card-body { /* Reusing card body style */
+    padding: 1.5rem;
+}
+
+/* --- Action Card Styles (Delete Confirmation, etc.) --- */
+.action-card { /* Reusing dashboard card base styles */
+    background-color: #fff;
+    border-radius: 0.75rem;
+    box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.05);
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    overflow: hidden;
+}
+.action-card:hover { /* Reusing dashboard card hover styles */
+    transform: scale(1.01);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.07);
+}
+.action-card-header { /* Custom action card header style */
+    background-color: #d9edf7; /* Light blue for header */
+    color: #31708f; /* Darker blue for header text */
+    padding: 1.25rem;
+    border-top-left-radius: 0.75rem;
+    border-top-right-radius: 0.75rem;
+    border-bottom: 1px solid #bce8f1;
+}
+.action-card-header h3 { /* Action card header h3 style */
+    font-size: 1.25rem;
+    margin-bottom: 0;
+    font-weight: 600;
+}
+
+/* --- Form Card Styles (Add/Edit Forms) --- */
+.form-card { /* Reusing dashboard card base styles */
+    background-color: #fff;
+    border-radius: 0.75rem;
+    box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.05);
+    padding: 2rem;
+}
+.form-header { /* Custom form header style */
+    margin-bottom: 1.5rem;
+    color: #046A7A;
+    border-bottom: 2px solid #b2d8d8; /* Light teal accent */
+    padding-bottom: 0.5rem;
+}
+
+/* --- Login/Register/Forgot Password Card Styles --- */
+.forgot-password-card, .login-card, .register-card { /* Common auth card styles */
+    background-color: #fff;
+    border-radius: 0.75rem;
+    box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+    width: 100%;
+    max-width: 400px; /* Adjust max-width as needed */
+    margin: 20px auto; /* Center on page with some margin */
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.forgot-password-card:hover, .login-card:hover, .register-card:hover { /* Common auth card hover style */
+    transform: scale(1.01);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.07);
+}
+
+.forgot-password-header, .login-header, .register-header { /* Common auth card header style */
+    background-color: var(--primary-teal);
+    color: white;
+    padding: 1.5rem;
+    text-align: center;
+}
+
+.forgot-password-form, .login-form, .register-form { /* Common auth card form style */
+    padding: 1.5rem;
+}
+.forgot-password-footer, .login-footer, .register-footer { /* Common auth card footer style */
+    text-align: center;
+    padding: 1rem 1.5rem;
+    border-top: 1px solid #e9ecef;
+}
+
+/* --- View Card Style (View Record, View Appointment, etc.) --- */
+.view-card, .test-result-card, .booking-card { /* Common view card styles */
+    background-color: #fff;
+    border-radius: 0.75rem;
+    box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.05);
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    overflow: hidden;
+    max-width: 700px; /* Adjust max-width as needed */
+    margin: auto; /* Center card on page */
+    margin-bottom: 2rem; /* Add some margin below */
+}
+
+.view-card:hover, .test-result-card:hover, .booking-card:hover { /* Common view card hover style */
+    transform: scale(1.01);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.07);
+}
+
+.view-header, .booking-header { /* Common view header styles */
+    background-color: var(--primary-teal);
+    color: white;
+    padding: 1rem 0;
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+/* --- Table Styles --- */
+.table {
+    font-size: 0.95rem;
+    margin-bottom: 0;
+}
+.table th {
+    font-weight: 600;
+    color: var(--primary-teal);
+    border-bottom: 2px solid rgba(4, 106, 122, 0.2);
+}
+.table tbody tr:hover {
+    background-color: #f8f9fa;
+}
+.table td {
+    padding: 0.75rem 0;
+    border-bottom: 1px solid #e9ecef;
+}
+.table td:last-child {
+    text-align: right; /* Right align actions in tables */
+}
+
+/* --- Alert Styles --- */
+.alert-success {
+    background-color: #d1e7dd;
+    border-color: #badbcc;
+    color: #0f5132;
+    border-radius: 0.3rem;
+    padding: 0.75rem 1rem;
+    margin-bottom: 1rem;
+}
+.alert-danger {
+    background-color: #f8d7da;
+    border-color: #f5c2c7;
+    color: #842029;
+    border-radius: 0.3rem;
+    padding: 0.75rem 1rem;
+    margin-bottom: 1rem;
+}
+
+/* --- Error Message Styles --- */
+.error-message, .text-danger { /* Common error message styles */
+    color: #dc3545;
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+    display: block; /* Ensure error messages are on a new line */
+}
+
+/* --- List Group Styles --- */
+.list-group-item a { /* List group link styles */
+    color: var(--primary-teal);
+    text-decoration: none;
+    transition: color 0.2s ease-in-out;
+}
+.list-group-item a:hover { /* List group link hover style */
+    text-decoration: underline;
+    color: var(--darker-teal);
+}
+
+/* --- Form Control Styles (Reused and Consistent) --- */
+.form-control { /* Reusing form control base styles */
+    border: 1px solid #ced4da;
+    border-radius: 0.3rem;
+    padding: 0.6rem 0.75rem;
+    font-size: 1rem;
+}
+.form-control:focus { /* Reusing form control focus styles */
+    border-color: var(--primary-teal);
+    box-shadow: 0 0 0 0.2rem rgba(4, 106, 122, 0.25);
+}
+
+/* --- Button Styles (Reused and Consistent) --- */
+.btn-primary { /* Reusing primary button base styles */
+    background-color: var(--primary-teal);
+    border-color: var(--primary-teal);
+    transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out;
+}
+.btn-primary:hover, .btn-primary:focus { /* Reusing primary button hover/focus styles */
+    background-color: var(--darker-teal);
+    border-color: var(--darker-teal);
+    box-shadow: 0 0 0 0.2rem rgba(4, 106, 122, 0.5);
+}
+
+.btn-secondary { /* Reusing secondary button base styles */
+    background-color: #6c757d;
+    border-color: #6c757d;
+    transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out;
+}
+.btn-secondary:hover, .btn-secondary:focus { /* Reusing secondary button hover/focus styles */
+    background-color: #545b62;
+    border-color: #4e555b;
+    box-shadow: 0 0 0 0.2rem rgba(108, 117, 125, 0.5);
+}
+
+.btn-outline-primary { /* Reusing outline primary button base styles */
+    color: var(--primary-teal);
+    border-color: var(--primary-teal);
+    transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+}
+.btn-outline-primary:hover, .btn-outline-primary:focus { /* Reusing outline primary button hover/focus styles */
+    background-color: var(--secondary-light-teal); /* Light tint */
+    border-color: var(--primary-teal);
+    color: var(--darker-teal);
+}
+
+.btn-outline-danger { /* Custom outline danger button style */
+    color: #dc3545;
+    border-color: #dc3545;
+    transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out, color 0.2s ease-in-out;
+}
+
+.btn-outline-danger:hover, .btn-outline-danger:focus { /* Custom outline danger button hover/focus style */
+    background-color: #f8d7da;
+    border-color: #dc3545;
+    color: #b02a37;
+}
+
+.btn-outline-warning { /* Custom outline warning button style */
+    color: #ffc107;
+    border-color: #ffc107;
+    transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out, color 0.2s ease-in-out;
+}
+
+.btn-outline-warning:hover, .btn-outline-warning:focus { /* Custom outline warning button hover/focus style */
+    background-color: #fff3cd;
+    border-color: #ffc107;
+    color: #b38b00;
+}
+
+.btn-info { /* Custom info button style */
+    background-color: var(--primary-teal);
+    border-color: var(--primary-teal);
+    color: white;
+    transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out;
+}
+
+.btn-info:hover, .btn-info:focus { /* Custom info button hover/focus style */
+    background-color: var(--darker-teal);
+    border-color: var(--darker-teal);
+    box-shadow: 0 0 0 0.2rem rgba(4, 106, 122, 0.5);
+}
+
+.btn-danger { /* Custom danger button style */
+    background-color: #dc3545;
+    border-color: #dc3545;
+    transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out;
+}
+
+.btn-danger:hover, .btn-danger:focus { /* Custom danger button hover/focus style */
+    background-color: #bb2d3b;
+    border-color: #b2242f;
+    box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.5);
+}
+
+.btn-warning { /* Custom warning button style */
+    background-color: #ffc107;
+    border-color: #ffc107;
+    transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out;
+}
+
+.btn-warning:hover, .btn-warning:focus { /* Custom warning button hover/focus style */
+    background-color: #e0a800;
+    border-color: #d39e00;
+    box-shadow: 0 0 0 0.2rem rgba(255, 193, 7, 0.5);
+}

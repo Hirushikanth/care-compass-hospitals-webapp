@@ -99,10 +99,10 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item"><a class="nav-link" href="index.php#services">Services</a></li>
-                    <li class="nav-item"><a class="nav-link" href="index.php#doctors">Doctors</a></li>
+                    <li class="nav-item"><a class="nav-link" href="doctors.php">Doctors</a></li>
                     <li class="nav-item"><a class="nav-link" href="index.php#facilities">Facilities</a></li>
                     <li class="nav-item"><a class="nav-link" href="index.php#contact">Contact</a></li>
-                    <li class="nav-item"><a class="btn btn-primary ms-2" href="login.php">Login</a></li>
+                    <li class="nav-item"><a class="btn btn-primary btn-sm ms-2" href="login.php" style="width: 150px;">Login</a></li>
                 </ul>
             </div>
         </div>
@@ -123,7 +123,7 @@
                     <div class="card-body">
                         <h3 class="card-title">Cardiology</h3>
                         <p class="card-text">Expert cardiac care, from routine check-ups to advanced interventions. Our cardiology department is equipped to handle all aspects of heart health.</p>
-                        <a href="#" class="btn btn-primary">Learn More</a>
+                        <a href="Services/cardiology.php" class="btn btn-primary">Learn More</a>
                     </div>
                 </div>
             </div>
@@ -133,7 +133,7 @@
                     <div class="card-body">
                         <h3 class="card-title">Oncology</h3>
                         <p class="card-text">Compassionate and cutting-edge cancer care. Our oncology team is dedicated to providing personalized treatment plans.</p>
-                        <a href="#" class="btn btn-primary">Learn More</a>
+                        <a href="Services/oncology.php" class="btn btn-primary">Learn More</a>
                     </div>
                 </div>
             </div>
@@ -143,7 +143,7 @@
                     <div class="card-body">
                         <h3 class="card-title">Pediatrics</h3>
                         <p class="card-text">Comprehensive healthcare for infants, children, and adolescents. We provide a nurturing and child-friendly environment.</p>
-                        <a href="#" class="btn btn-primary">Learn More</a>
+                        <a href="Services/pediatrics.php" class="btn btn-primary">Learn More</a>
                     </div>
                 </div>
             </div>
@@ -153,7 +153,7 @@
                     <div class="card-body">
                         <h3 class="card-title">Neurology</h3>
                         <p class="card-text">Advanced diagnostics and treatment for neurological disorders. Our neurologists are leaders in their field.</p>
-                        <a href="#" class="btn btn-primary">Learn More</a>
+                        <a href="Services/neurology.php" class="btn btn-primary">Learn More</a>
                     </div>
                 </div>
             </div>
@@ -163,7 +163,7 @@
                     <div class="card-body">
                         <h3 class="card-title">Orthopedics</h3>
                         <p class="card-text">From sports injuries to joint replacements, our orthopedic services cover a wide range of musculoskeletal conditions.</p>
-                        <a href="#" class="btn btn-primary">Learn More</a>
+                        <a href="Services/orthopedics.php" class="btn btn-primary">Learn More</a>
                     </div>
                 </div>
             </div>
@@ -173,7 +173,7 @@
                     <div class="card-body">
                         <h3 class="card-title">Emergency Services</h3>
                         <p class="card-text">24/7 emergency care with rapid response and expert medical teams. We are always ready to provide immediate care.</p>
-                        <a href="#" class="btn btn-primary">Learn More</a>
+                        <a href="Services/emergency_services.php" class="btn btn-primary">Learn More</a>
                     </div>
                 </div>
             </div>
@@ -183,7 +183,7 @@
                     <div class="card-body">
                         <h3 class="card-title">Radiology</h3>
                         <p class="card-text">Cutting-edge imaging technology for accurate and timely diagnoses. Our radiology department supports all clinical specialties.</p>
-                        <a href="#" class="btn btn-primary">Learn More</a>
+                        <a href="Services/radiology.php" class="btn btn-primary">Learn More</a>
                     </div>
                 </div>
             </div>
@@ -193,7 +193,7 @@
                     <div class="card-body">
                         <h3 class="card-title">Laboratory Services</h3>
                         <p class="card-text">Comprehensive lab services ensuring quick and reliable diagnostic results. From routine tests to specialized analyses.</p>
-                        <a href="#" class="btn btn-primary">Learn More</a>
+                        <a href="Services/laboratory_services.php" class="btn btn-primary">Learn More</a>
                     </div>
                 </div>
             </div>
@@ -203,7 +203,7 @@
                     <div class="card-body">
                         <h3 class="card-title">Pharmacy Services</h3>
                         <p class="card-text">Our pharmacy provides a wide range of medications and pharmaceutical services, ensuring patient safety and convenience.</p>
-                        <a href="#" class="btn btn-primary">See More</a> <!-- "See More" Button as requested -->
+                        <a href="Services/pharmacy_services.php" class="btn btn-primary">See More</a> <!-- "See More" Button as requested -->
                     </div>
                 </div>
             </div>
@@ -225,7 +225,7 @@
                         <li><a href="index.php#about" class="text-white">About Us</a></li>
                         <li><a href="index.php#services" class="text-white">Services</a></li>
                         <li><a href="index.php#doctors" class="text-white">Doctors</a></li>
-                        <li><a href="index.php#contact" class="text-white">Contact</a></li>
+                        <li><a href="contact.php" class="text-white">Contact</a></li>
                     </ul>
                 </div>
                 <div class="col-md-4">

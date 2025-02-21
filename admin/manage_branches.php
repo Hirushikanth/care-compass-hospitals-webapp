@@ -26,8 +26,8 @@ unset($_SESSION['success_message']);
 unset($_SESSION['error_message']);
 
 
-// Fetch all doctors
-$doctors = $db->getAllDoctors();
+// Fetch all branches
+$branches = $db->getAllBranches();
 ?>
 
 <!DOCTYPE html>
@@ -35,20 +35,15 @@ $doctors = $db->getAllDoctors();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manage Doctors - Care Compass Connect</title>
+    <title>Manage Branches - Care Compass Connect Admin</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="../assets/css/style.css">
-    <!-- Add your custom styles if needed -->
+    <link rel="stylesheet" href="../assets/css/style.css"> <!-- Link to your main stylesheet -->
 </head>
 <body>
-    <?php include('../includes/header.php'); ?>
+    <?php include('../includes/header.php'); // Assuming you have a header include file in includes folder ?>
 
     <div class="container py-5">
-        <div class="row">
-            <div class="col-md-12">
-                <h2>Manage Doctors</h2>
-            </div>
-        </div>
+        <h2 class="mb-4">Manage Branches</h2>
 
         <?php if ($success_message): ?>
             <div class="alert alert-success"><?= htmlspecialchars($success_message) ?></div>
@@ -60,33 +55,31 @@ $doctors = $db->getAllDoctors();
         <div class="card shadow-sm">
             <div class="card-body">
                 <div class="mb-3">
-                    <a href="add_doctor.php" class="btn btn-primary"><i class="bi bi-plus-circle me-1"></i> Add New Doctor</a>
+                    <a href="add_branch.php" class="btn btn-primary"><i class="bi bi-plus-circle me-1"></i> Add New Branch</a>
                 </div>
 
-                <?php if ($doctors): ?>
+                <?php if ($branches): ?>
                     <div class="table-responsive">
                         <table class="table table-hover">
                             <thead>
                                 <tr>
                                     <th>ID</th>
-                                    <th>Full Name</th>
-                                    <th>Email</th>
-                                    <th>Specialty</th>
-                                    <th>Branch</th> <!-- New Branch Column Header -->
+                                    <th>Name</th>
+                                    <th>City</th>
+                                    <th>Phone</th>
                                     <th class="text-end">Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <?php foreach ($doctors as $doctor): ?>
+                                <?php foreach ($branches as $branch): ?>
                                     <tr>
-                                        <td><?= htmlspecialchars($doctor['id']) ?></td>
-                                        <td><?= htmlspecialchars($doctor['fullname']) ?></td>
-                                        <td><?= htmlspecialchars($doctor['email']) ?></td>
-                                        <td><?= htmlspecialchars($doctor['specialty']) ?></td>
-                                        <td><?= htmlspecialchars($doctor['branch_name'] ?: 'N/A') ?></td> <!-- Display Branch Name -->
+                                        <td><?= htmlspecialchars($branch['id']) ?></td>
+                                        <td><?= htmlspecialchars($branch['name']) ?></td>
+                                        <td><?= htmlspecialchars($branch['city'] ?: 'N/A') ?></td>
+                                        <td><?= htmlspecialchars($branch['phone'] ?: 'N/A') ?></td>
                                         <td class="text-end">
-                                            <a href="edit_doctor.php?id=<?= $doctor['id'] ?>" class="btn btn-sm btn-outline-warning"><i class="bi bi-pencil-square"></i> Edit</a>
-                                            <a href="delete_doctor.php?id=<?= $doctor['id'] ?>" class="btn btn-sm btn-outline-danger" onclick="return confirm('Are you sure you want to delete this doctor?')"><i class="bi bi-trash"></i> Delete</a>
+                                            <a href="edit_branch.php?id=<?= $branch['id'] ?>" class="btn btn-sm btn-warning"><i class="bi bi-pencil-square"></i> Edit</a>
+                                            <a href="delete_branch.php?id=<?= $branch['id'] ?>" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this branch?')"><i class="bi bi-trash"></i> Delete</a>
                                         </td>
                                     </tr>
                                 <?php endforeach; ?>
@@ -94,11 +87,8 @@ $doctors = $db->getAllDoctors();
                         </table>
                     </div>
                 <?php else: ?>
-                    <p class="text-muted">No doctors found.</p>
+                    <p class="text-muted">No branches found.</p>
                 <?php endif; ?>
-                <div class="mt-3">
-                    <a href="doctor_search.php" class="btn btn-outline-primary">Search Doctors</a>
-                </div>
             </div>
         </div>
 
@@ -107,8 +97,8 @@ $doctors = $db->getAllDoctors();
         </div>
     </div>
 
-    <?php include('../includes/footer.php'); ?>
+    <?php include('../includes/footer.php'); // Assuming you have a footer include file in includes folder ?>
 
-    <script src="../assets/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

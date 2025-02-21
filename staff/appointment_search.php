@@ -155,7 +155,7 @@ if ($searchQuery || $searchDate) {
                                             <td><?= htmlspecialchars($appointment['appointment_time']) ?></td>
                                             <td><?= htmlspecialchars($appointment['status']) ?></td>
                                             <td>
-                                                <a href="view_appointment.php?id=<?= $appointment['id'] ?>" class="btn btn-sm btn-info"><i class="bi bi-eye"></i> View</a>
+                                                <a href="../view_appointment.php?id=<?= $appointment['id'] ?>" class="btn btn-sm btn-info"><i class="bi bi-eye"></i> View</a>
                                                 <?php if ($appointment['status'] == 'pending'): ?>
                                                     <a href="confirm_appointment.php?id=<?= $appointment['id'] ?>" class="btn btn-sm btn-success"><i class="bi bi-check-circle"></i> Confirm</a>
                                                     <a href="cancel_appointment.php?id=<?= $appointment['id'] ?>" class="btn btn-sm btn-danger"><i class="bi bi-x-circle"></i> Cancel</a>

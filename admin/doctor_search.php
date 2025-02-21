@@ -37,52 +37,60 @@ if ($searchQuery) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Doctor Search - Care Compass Connect</title>
     <link rel="stylesheet" href="../assets/css/bootstrap.min.css">
-    <!-- Add your custom styles if needed -->
+    <link rel="stylesheet" href="../assets/css/style.css"> <!-- Link to your main stylesheet -->
 </head>
 <body>
+    <?php include('../includes/header.php'); ?>
+
     <div class="container">
         <h2>Doctor Search</h2>
 
         <form method="get">
             <div class="input-group mb-3">
                 <input type="text" class="form-control" name="search_query" placeholder="Search by name or specialty" value="<?= htmlspecialchars($searchQuery) ?>">
-                <button class="btn btn-outline-secondary" type="submit">Search</button>
+                <button class="btn btn-primary" type="submit">Search</button>
             </div>
         </form>
 
         <h3>Search Results:</h3>
         <?php if ($doctors): ?>
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Full Name</th>
-                        <th>Email</th>
-                        <th>Specialty</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php foreach ($doctors as $doctor): ?>
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
                         <tr>
-                            <td><?= $doctor['id'] ?></td>
-                            <td><?= $doctor['fullname'] ?></td>
-                            <td><?= $doctor['email'] ?></td>
-                            <td><?= $doctor['specialty'] ?></td>
-                            <td>
-                                <a href="edit_doctor.php?id=<?= $doctor['id'] ?>" class="btn btn-sm btn-warning">Edit</a>
-                                <a href="delete_doctor.php?id=<?= $doctor['id'] ?>" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this doctor?')">Delete</a>
-                            </td>
+                            <th>ID</th>
+                            <th>Full Name</th>
+                            <th>Email</th>
+                            <th>Specialty</th>
+                            <th>Branch</th> <!-- New Branch Column Header -->
+                            <th>Actions</th>
                         </tr>
-                    <?php endforeach; ?>
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        <?php foreach ($doctors as $doctor): ?>
+                            <tr>
+                                <td><?= $doctor['id'] ?></td>
+                                <td><?= htmlspecialchars($doctor['fullname']) ?></td>
+                                <td><?= htmlspecialchars($doctor['email']) ?></td>
+                                <td><?= htmlspecialchars($doctor['specialty']) ?></td>
+                                <td><?= htmlspecialchars($doctor['branch_name'] ?: 'N/A') ?></td> <!-- Display Branch Name -->
+                                <td>
+                                    <a href="edit_doctor.php?id=<?= $doctor['id'] ?>" class="btn btn-sm btn-warning">Edit</a>
+                                    <a href="delete_doctor.php?id=<?= $doctor['id'] ?>" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this doctor?')">Delete</a>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
         <?php else: ?>
             <p>No doctors found matching your query.</p>
         <?php endif; ?>
 
-        <a href="admin/dashboard.php" class="btn btn-secondary mt-3">Back to Dashboard</a>
+        <a href="dashboard.php" class="btn btn-secondary mt-3">Back to Dashboard</a>
     </div>
+
+    <?php include('../includes/footer.php'); ?>
 
     <script src="../assets/js/bootstrap.bundle.min.js"></script>
 </body>

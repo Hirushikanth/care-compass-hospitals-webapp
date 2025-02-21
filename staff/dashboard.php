@@ -174,6 +174,9 @@ if (isset($_GET['logout'])) {
             <div class="row align-items-center">
                 <div class="col-md-6">
                     <h2>Welcome, <?= htmlspecialchars($staff['fullname']) ?>!</h2>
+                    <?php if ($staff['branch_name']): ?>  <!-- Conditionally display branch name -->
+                        <p class="text-muted">Branch: <?= htmlspecialchars($staff['branch_name']) ?></p>
+                    <?php endif; ?>
                 </div>
                 <div class="col-md-6 text-md-end">
                     <a href="?logout=true" class="btn btn-light">Logout</a>
@@ -325,7 +328,7 @@ if (isset($_GET['logout'])) {
                     </div>
                     <div class="card-body">
                         <div class="d-flex flex-wrap gap-2">
-                            <a href="appointment_search.php" class="btn btn-primary"><i class="bi bi-calendar-week me-1"></i> Search Appointments</a>
+                            <a href="view_all_appointments.php" class="btn btn-primary"><i class="bi bi-calendar-week me-1"></i> View Appointments</a>
                             <a href="add_medical_record.php" class="btn btn-success"><i class="bi bi-file-medical-fill me-1"></i> Add Medical Record</a>
                             <a href="order_lab_test.php" class="btn btn-primary"><i class="bi bi-clipboard-plus me-1"></i> Order Lab Test</a>
                         </div>

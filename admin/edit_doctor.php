@@ -33,6 +33,9 @@ if (!$doctor) {
     exit;
 }
 
+// Fetch all branches for the dropdown
+$branches = $db->getAllBranches(); // Fetch branches for branch selection dropdown
+
 // Handle form submission
 if (isset($_POST['edit_doctor'])) {
     $fullname = sanitize_input($_POST['fullname']);
@@ -42,6 +45,7 @@ if (isset($_POST['edit_doctor'])) {
     $availability = sanitize_input($_POST['availability']);
     $phone = sanitize_input($_POST['phone']);
     $address = sanitize_input($_POST['address']);
+    $branchId = $_POST['branch_id']; // Get branch ID from form
 
     // Server-side validation (in addition to client-side validation)
     $errors = [];
@@ -56,11 +60,14 @@ if (isset($_POST['edit_doctor'])) {
     if (empty($specialty)) {
         $errors[] = "Specialty is required.";
     }
+    if (empty($branchId)) { // Validate branch selection
+        $errors[] = "Branch is required.";
+    }
     // Add more server-side validation as needed
 
     // If no errors, proceed with updating the doctor
     if (empty($errors)) {
-        $success = $db->updateDoctor($doctorId, $fullname,$email, $specialty, $qualifications, $availability,$phone,$address);
+        $success = $db->updateDoctor($doctorId, $fullname, $email, $specialty, $qualifications, $availability, $phone, $address, $branchId); // Pass branchId to updateDoctor
 
         if ($success) {
             echo '<div class="alert alert-success">Doctor updated successfully!</div>';
@@ -84,103 +91,24 @@ if (isset($_POST['edit_doctor'])) {
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Edit Doctor - Care Compass Connect</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
-    <style>
-        body {
-            background-color: #f0f8ff; /* Light background from the palette */
-            font-family: 'Nunito', sans-serif;
-            color: #343a40;
-        }
-        .container {
-            margin-top: 3rem;
-        }
-        .form-card {
-            background-color: #fff;
-            border-radius: 0.75rem;
-            box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.05);
-            padding: 2rem;
-        }
-        .form-header {
-            margin-bottom: 1.5rem;
-            color: #046A7A; /* Dark teal from the palette */
-            border-bottom: 2px solid #b2d8d8; /* Light teal accent */
-            padding-bottom: 0.5rem;
-        }
-        .form-label {
-            font-weight: 600;
-            margin-bottom: 0.3rem;
-            display: block;
-        }
-        .form-control {
-            border-radius: 0.3rem;
-            padding: 0.7rem 0.75rem;
-            border: 1px solid #ced4da;
-            margin-bottom: 1rem;
-            font-size: 1rem;
-        }
-        .form-control:focus {
-            border-color: #046A7A;
-            box-shadow: 0 0 0 0.2rem rgba(4, 106, 122, 0.25);
-        }
-        .btn-primary {
-            background-color: #046A7A;
-            border-color: #046A7A;
-            color: white;
-            padding: 0.75rem 1.25rem;
-            border-radius: 0.3rem;
-            transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out;
-        }
-        .btn-primary:hover, .btn-primary:focus {
-            background-color: #034e5a;
-            border-color: #034e5a;
-            box-shadow: 0 0 0 0.2rem rgba(4, 106, 122, 0.5);
-        }
-        .btn-secondary {
-            background-color: #f8f9fa;
-            border-color: #ced4da;
-            color: #6c757d;
-            padding: 0.75rem 1.25rem;
-            border-radius: 0.3rem;
-            transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out, color 0.2s ease-in-out;
-        }
-        .btn-secondary:hover, .btn-secondary:focus {
-            background-color: #e2e6ea;
-            border-color: #b1b8bb;
-            color: #495057;
-        }
-        .alert-success {
-            background-color: #d1e7dd;
-            border-color: #badbcc;
-            color: #0f5132;
-            padding: 0.75rem 1rem;
-            margin-bottom: 1rem;
-            border-radius: 0.3rem;
-        }
-        .alert-danger {
-            background-color: #f8d7da;
-            border-color: #f5c2c7;
-            color: #842029;
-            padding: 0.75rem 1rem;
-            margin-bottom: 1rem;
-            border-radius: 0.3rem;
-        }
-        .text-danger {
-            font-size: 0.9rem;
-        }
-    </style>
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <!-- Add your custom styles if needed -->
 </head>
 <body>
+    <?php include('../includes/header.php'); ?>
+
     <div class="container">
         <div class="form-card">
             <h2 class="form-header">Edit Doctor</h2>
 
             <form method="post" onsubmit="return validateForm()">
-                <?php if (isset($success_message)): ?>
+                <?php if (isset($_POST['edit_doctor']) && empty($errors) && isset($success) && $success): ?>
                     <div class="alert alert-success"><?= $success_message ?></div>
                 <?php endif; ?>
                 <?php if (!empty($errors)): ?>
@@ -206,6 +134,16 @@ if (isset($_POST['edit_doctor'])) {
                     <label for="specialty" class="form-label">Specialty:</label>
                     <input type="text" class="form-control" id="specialty" name="specialty" value="<?= htmlspecialchars($doctor['specialty']) ?>" required>
                     <div id="specialty-error" class="text-danger"></div>
+                </div>
+                <div class="mb-3">
+                    <label for="branch_id" class="form-label">Branch:</label>  <!-- Branch Dropdown -->
+                    <select class="form-control" id="branch_id" name="branch_id" required>
+                        <option value="">-- Select Branch --</option>
+                        <?php foreach ($branches as $branchOption): ?>
+                            <option value="<?= htmlspecialchars($branchOption['id']) ?>" <?= ($doctor['branch_id'] == $branchOption['id']) ? 'selected' : '' ?>><?= htmlspecialchars($branchOption['name']) ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                    <div id="branch-id-error" class="text-danger"></div>
                 </div>
                 <div class="mb-3">
                     <label for="phone" class="form-label">Phone:</label>
@@ -238,12 +176,14 @@ if (isset($_POST['edit_doctor'])) {
             const fullname = document.getElementById('fullname').value;
             const email = document.getElementById('email').value;
             const specialty = document.getElementById('specialty').value;
+            const branchId = document.getElementById('branch_id').value; // Get branch ID
             const phone = document.getElementById('phone').value;
 
             // Reset error messages
             document.getElementById('fullname-error').innerText = '';
             document.getElementById('email-error').innerText = '';
             document.getElementById('specialty-error').innerText = '';
+            document.getElementById('branch-id-error').innerText = ''; // Reset branch error
             document.getElementById('phone-error').innerText = '';
 
             // Full name validation
@@ -264,6 +204,11 @@ if (isset($_POST['edit_doctor'])) {
             // Specialty validation
             if (specialty.trim() === '') {
                 document.getElementById('specialty-error').innerText = 'Specialty is required.';
+                isValid = false;
+            }
+             // Branch validation
+             if (branchId === '') {
+                document.getElementById('branch-id-error').innerText = 'Branch is required.'; // Branch error message
                 isValid = false;
             }
 
