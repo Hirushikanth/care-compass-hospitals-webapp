@@ -45,7 +45,7 @@
                             <i class="bi bi-person-plus display-4 mb-3"></i>
                             <h3>Find a Doctor</h3>
                             <p>Search our network of experienced healthcare professionals.</p>
-                            <a href="doctor_search.php" class="btn btn-outline-primary">Search Now</a> <!-- Linked to doctor search page -->
+                            <a href="find_a_doctor.php" class="btn btn-outline-primary">Search Now</a> <!-- Linked to doctor search page -->
                         </div>
                     </div>
                 </div>

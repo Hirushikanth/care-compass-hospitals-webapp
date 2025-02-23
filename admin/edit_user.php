@@ -33,6 +33,31 @@ if (!$user) {
     exit;
 }
 
+// Fetch all branches for the dropdown
+$branches = $db->getAllBranches(); // Fetch branches for dropdown
+
+// Initialize variables for form values and errors
+$fullname = $user['fullname'];
+$email = $user['email'];
+$userType = $user['user_type'];
+$phone = $user['phone'];
+$address = $user['address'];
+$staffDepartment = '';
+$staffPosition = '';
+$branchId = null; // Initialize branchId to null
+
+if ($userType == 'staff') {
+    $staffData = $db->getStaffById($userId); // Fetch staff-specific data
+    if ($staffData) {
+        $staffDepartment = $staffData['staff_department'];
+        $staffPosition = $staffData['staff_position'];
+        $branchId = $staffData['branch_id']; // Get branchId for staff user
+    }
+}
+
+$errors = [];
+$success = false;
+
 // Handle form submission
 if (isset($_POST['edit_user'])) {
     $fullname = sanitize_input($_POST['fullname']);
@@ -40,6 +65,10 @@ if (isset($_POST['edit_user'])) {
     $userType = $_POST['user_type'];
     $phone = sanitize_input($_POST['phone']);
     $address = sanitize_input($_POST['address']);
+    $staffDepartment = sanitize_input($_POST['staff_department']); // Get staff department from form
+    $staffPosition = sanitize_input($_POST['staff_position']);     // Get staff position from form
+    $branchId = $_POST['branch_id']; // Get branch ID from form
+
 
     // Server-side validation (in addition to client-side validation)
     $errors = [];
@@ -51,16 +80,38 @@ if (isset($_POST['edit_user'])) {
     } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $errors[] = "Invalid email format.";
     }
+    if (empty($userType)) {
+        $errors[] = "User Type is required.";
+    }
+     if ($userType == 'staff' && empty($branchId)) { // Validate branch for staff
+        $errors[] = "Branch is required for Staff users";
+    }
     // Add more server-side validation as needed
 
     // If no errors, proceed with updating the user
     if (empty($errors)) {
-        $success = $db->updateUser($userId, $fullname, $email, $userType, $phone, $address);
+        $success = false; // Initialize success to false
+
+        if ($userType != 'staff') {
+             $success = $db->updateUser($userId, $fullname, $email, $userType, $phone, $address); // Update non-staff user
+        } else {
+            // Update staff user including branch
+            $success = $db->updateStaffUser($userId, $fullname, $email, $userType, $phone, $address, $staffDepartment, $staffPosition, $branchId); // Call new updateStaffUser()
+        }
+
 
         if ($success) {
             echo '<div class="alert alert-success">User updated successfully!</div>';
             // Refetch user data to update the form
             $user = $db->getUserById($userId);
+             if ($userType == 'staff') {
+                $staffData = $db->getStaffById($userId);
+                if ($staffData) {
+                    $staffDepartment = $staffData['staff_department'];
+                    $staffPosition = $staffData['staff_position'];
+                    $branchId = $staffData['branch_id']; // Refetch branchId after update
+                }
+            }
         } else {
             echo '<div class="alert alert-danger">Error updating user.</div>';
         }
@@ -86,6 +137,7 @@ if (isset($_POST['edit_user'])) {
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/css/style.css">
     <style>
         body {
             background-color: #f0f8ff; /* Light background from the palette */
@@ -180,22 +232,45 @@ if (isset($_POST['edit_user'])) {
             <form method="post" onsubmit="return validateForm()">
                 <div class="mb-3">
                     <label for="fullname" class="form-label">Full Name:</label>
-                    <input type="text" class="form-control" id="fullname" name="fullname" value="<?= htmlspecialchars($user['fullname']) ?>" required>
+                    <input type="text" class="form-control" id="fullname" name="fullname" value="<?= htmlspecialchars($fullname) ?>" required>
                     <div id="fullname-error" class="text-danger"></div>
                 </div>
                 <div class="mb-3">
                     <label for="email" class="form-label">Email:</label>
-                    <input type="email" class="form-control" id="email" name="email" value="<?= htmlspecialchars($user['email']) ?>" required>
+                    <input type="email" class="form-control" id="email" name="email" value="<?= htmlspecialchars($email) ?>" required>
                     <div id="email-error" class="text-danger"></div>
                 </div>
                 <div class="mb-3">
                     <label for="user_type" class="form-label">User Type:</label>
-                    <select class="form-control" id="user_type" name="user_type" required>
-                        <option value="admin" <?= ($user['user_type'] == 'admin') ? 'selected' : '' ?>>Admin</option>
-                        <option value="staff" <?= ($user['user_type'] == 'staff') ? 'selected' : '' ?>>Staff</option>
-                        <option value="patient" <?= ($user['user_type'] == 'patient') ? 'selected' : '' ?>>Patient</option>
+                    <select class="form-control" id="user_type" name="user_type" required onchange="toggleStaffFields()">
+                        <option value="admin" <?= ($userType == 'admin') ? 'selected' : '' ?>>Admin</option>
+                        <option value="staff" <?= ($userType == 'staff') ? 'selected' : '' ?>>Staff</option>
+                        <option value="patient" <?= ($userType == 'patient') ? 'selected' : '' ?>>Patient</option>
                     </select>
                     <div id="user-type-error" class="text-danger"></div>
+                </div>
+                 <!-- Staff Specific Fields (Conditionally Displayed) -->
+                 <div class="mb-3" id="staff-fields" style="<?php echo ($userType == 'staff') ? 'display: block;' : 'display: none;'; ?>">
+                    <div class="mb-3">
+                        <label for="staff_department" class="form-label">Staff Department:</label>
+                        <input type="text" class="form-control" id="staff_department" name="staff_department" value="<?= htmlspecialchars($staffDepartment) ?>">
+                        <div id="staff-department-error" class="text-danger"></div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="staff_position" class="form-label">Staff Position:</label>
+                        <input type="text" class="form-control" id="staff_position" name="staff_position" value="<?= htmlspecialchars($staffPosition) ?>">
+                        <div id="staff-position-error" class="text-danger"></div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="branch_id" class="form-label">Branch:</label>
+                        <select class="form-control" id="branch_id" name="branch_id" required>
+                            <option value="">-- Select Branch --</option>
+                            <?php foreach ($branches as $branchOption): ?>
+                                <option value="<?= htmlspecialchars($branchOption['id']) ?>" <?= ($branchId == $branchOption['id']) ? 'selected' : '' ?>><?= htmlspecialchars($branchOption['name']) ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                        <div id="branch-error" class="text-danger"></div>
+                    </div>
                 </div>
                 <div class="mb-3">
                     <label for="phone" class="form-label">Phone:</label>
@@ -212,7 +287,7 @@ if (isset($_POST['edit_user'])) {
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../assets/js/bootstrap.bundle.min.js"></script>
     <script>
         function validateForm() {
             let isValid = true;
@@ -220,12 +295,16 @@ if (isset($_POST['edit_user'])) {
             const email = document.getElementById('email').value;
             const userType = document.getElementById('user_type').value;
             const phone = document.getElementById('phone').value;
+            let branchId = '';
+
 
             // Reset error messages
             document.getElementById('fullname-error').innerText = '';
             document.getElementById('email-error').innerText = '';
             document.getElementById('user-type-error').innerText = '';
             document.getElementById('phone-error').innerText = '';
+            document.getElementById('branch-error').innerText = '';
+
 
             // Full name validation
             if (fullname.trim() === '') {
@@ -247,6 +326,16 @@ if (isset($_POST['edit_user'])) {
                 document.getElementById('user-type-error').innerText = 'Please select a user type.';
                 isValid = false;
             }
+             if (userType === 'staff') {
+                branchId = document.getElementById('branch_id').value;
+                if (branchId === '') {
+                    document.getElementById('branch-error').innerText = 'Branch is required for staff users.';
+                    isValid = false;
+                }else{
+                    document.getElementById('branch-error').innerText = '';
+                }
+            }
+
 
             // Phone number validation (basic example, adjust regex as needed)
             if (phone.trim() !== '' && !/^\d{10}$/.test(phone)) {
@@ -256,6 +345,21 @@ if (isset($_POST['edit_user'])) {
 
             return isValid;
         }
+
+        function toggleStaffFields() {
+            var userType = document.getElementById("user_type").value;
+            var staffFields = document.getElementById("staff-fields");
+
+
+            if (userType === 'staff') {
+                staffFields.style.display = 'block';
+            } else {
+                staffFields.style.display = 'none';
+            }
+        }
+
+        // Call toggleStaffFields on page load to set initial state based on PHP-set user_type (if any)
+        window.onload = toggleStaffFields;
     </script>
 </body>
 </html>

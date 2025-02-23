@@ -4,6 +4,10 @@ include('../includes/config.php');
 include('../includes/db.php');
 include('../includes/functions.php');
 
+// Initialize variables for form values and errors
+$fullname = $email = $password = $specialty = $qualifications = $availability = $phone = $address = $branchId = '';
+$errors = [];
+
 // Start session
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
@@ -68,7 +72,7 @@ if (isset($_POST['add_doctor'])) {
         $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
 
         // Insert user (as 'staff')
-        $user_id = $db->createUser($fullname, $email, $hashedPassword, 'staff', $phone, $address);
+        $user_id = $db->createUser($fullname, $email, $hashedPassword, 'doctor', $phone, $address);
 
         if ($user_id) {
             // Insert doctor with branch ID

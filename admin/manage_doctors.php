@@ -82,8 +82,8 @@ $doctors = $db->getAllDoctors();
                                         <td><?= htmlspecialchars($doctor['id']) ?></td>
                                         <td><?= htmlspecialchars($doctor['fullname']) ?></td>
                                         <td><?= htmlspecialchars($doctor['email']) ?></td>
-                                        <td><?= htmlspecialchars($doctor['specialty']) ?></td>
-                                        <td><?= htmlspecialchars($doctor['branch_name'] ?: 'N/A') ?></td> <!-- Display Branch Name -->
+                                        <td><?= htmlspecialchars($doctor['specialty'] ?? 'N/A') ?></td>
+                                        <td><?= htmlspecialchars($doctor['branch_name'] ?: 'N/A') ?></td> 
                                         <td class="text-end">
                                             <a href="edit_doctor.php?id=<?= $doctor['id'] ?>" class="btn btn-sm btn-outline-warning"><i class="bi bi-pencil-square"></i> Edit</a>
                                             <a href="delete_doctor.php?id=<?= $doctor['id'] ?>" class="btn btn-sm btn-outline-danger" onclick="return confirm('Are you sure you want to delete this doctor?')"><i class="bi bi-trash"></i> Delete</a>

@@ -17,8 +17,12 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['user_role'] != 'patient' && $_SE
 
 $db = new Database();
 
+// Fetch all branches for branch selection dropdown
+$branches = $db->getAllBranches(); // Fetch branches
+
 // Handle form submission
 if (isset($_POST['book_appointment'])) {
+    $branchId = $_POST['branch_id']; // Get branch ID from form  <- NEW
     $doctorId = $_POST['doctor_id'];
     $appointmentDate = $_POST['appointment_date'];
     $appointmentTime = $_POST['appointment_time'];
@@ -33,6 +37,9 @@ if (isset($_POST['book_appointment'])) {
     // Server-side validation
     $errors = [];
 
+    if (empty($branchId)) { // Validate branch selection  <- NEW
+        $errors[] = "Please select a branch.";
+    }
     if (empty($doctorId) || empty($appointmentDate) || empty($appointmentTime)) {
         $errors[] = "Please fill in all required fields.";
     }
@@ -58,7 +65,9 @@ if (isset($_POST['book_appointment'])) {
             $errors[] = "Sorry, that time slot is no longer available.";
         } else {
             // Insert the appointment into the database
-            $success = $db->createAppointment($patientId, $doctorId, $appointmentDate, $appointmentTime, $reason);
+            $branchId = $_POST['branch_id']; // Get branch ID from form
+
+            $success = $db->createAppointment($patientId, $doctorId, $branchId, $appointmentDate, $appointmentTime, $reason); // 6 arguments - CORRECT - Added $branchId
 
             if ($success) {
                 $_SESSION['booking_success'] = true;
@@ -203,6 +212,16 @@ if (isset($_POST['book_appointment'])) {
                     </div>
                 <?php endif; ?>
                 <form method="post">
+                     <div class="mb-3">
+                        <label for="branch" class="form-label">Select Branch:</label>  <!-- New Branch Dropdown -->
+                        <select class="form-control" id="branch" name="branch_id" required>
+                            <option value="">-- Select Branch --</option>
+                            <?php foreach ($branches as $branch): ?>
+                                <option value="<?= $branch['id'] ?>"><?= htmlspecialchars($branch['name']) ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                        <div id="branch-error" class="text-danger"></div>
+                    </div>
                     <?php if ($_SESSION['user_role'] == 'staff'): ?>
                         <div class="mb-3">
                             <label for="patient_id_for_booking" class="form-label">Select Patient:</label>
@@ -219,16 +238,11 @@ if (isset($_POST['book_appointment'])) {
                     <?php endif; ?>
                     <div class="mb-3">
                         <label for="doctor" class="form-label">Select Doctor:</label>
-                        <select class="form-control" id="doctor" name="doctor_id" required>
+                        <select class="form-control" id="doctor" name="doctor_id" required disabled>  <!-- Doctor Dropdown - Initially Disabled -->
                             <option value="">-- Select Doctor --</option>
-                            <?php
-                            // Fetch all doctors from the database
-                            $doctors = $db->getAllDoctors();
-                            foreach ($doctors as $doctor):
-                            ?>
-                                <option value="<?= $doctor['id'] ?>"><?= htmlspecialchars($doctor['fullname']) ?> (<?= htmlspecialchars($doctor['specialty']) ?>)</option>
-                            <?php endforeach; ?>
+                            <!-- Doctors will be loaded here dynamically by JavaScript -->
                         </select>
+                        <div id="doctor-error" class="text-danger"></div>
                     </div>
 
                     <div class="mb-3">
@@ -262,16 +276,50 @@ if (isset($_POST['book_appointment'])) {
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
+        const branchSelect = document.getElementById('branch'); // Branch dropdown
         const doctorSelect = document.getElementById('doctor');
         const dateSelect = document.getElementById('date');
         const timeSelect = document.getElementById('time');
         const loadingIndicator = document.getElementById('loading-indicator');
 
-        // Disable time select initially
+        // Disable doctor and time select initially
+        doctorSelect.disabled = true;  // Doctor dropdown disabled initially
         timeSelect.disabled = true;
 
+        branchSelect.addEventListener('change', loadDoctorsByBranch); // Event listener for branch change
         doctorSelect.addEventListener('change', loadAvailableTimeSlots);
         dateSelect.addEventListener('change', loadAvailableTimeSlots);
+
+        function loadDoctorsByBranch() { // Function to load doctors based on branch
+            const branchId = branchSelect.value;
+
+            // Reset doctor select and disable it if no branch is selected
+            if (!branchId) {
+                doctorSelect.innerHTML = '<option value="">-- Select Doctor --</option>';
+                doctorSelect.disabled = true;
+                return;
+            }
+
+            // Fetch doctors by branch using AJAX
+            const xhr = new XMLHttpRequest();
+            xhr.open('POST', 'get_doctors_by_branch.php', true); // New PHP file to fetch doctors by branch
+            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+            xhr.onload = function() {
+                if (xhr.status >= 200 && xhr.status < 300) {
+                    doctorSelect.innerHTML = xhr.responseText;
+                    doctorSelect.disabled = false; // Enable doctor select after loading
+                } else {
+                    console.error('Request failed. Returned status of ' + xhr.status);
+                    doctorSelect.innerHTML = '<option value="">Error loading doctors.</option>';
+                }
+            };
+            xhr.onerror = function() {
+                console.error("Request failed");
+                doctorSelect.innerHTML = '<option value="">Error loading doctors.</option>';
+            };
+            xhr.send('branch_id=' + branchId); // Send branch ID to PHP
+        }
+
 
         function loadAvailableTimeSlots() {
             const doctorId = doctorSelect.value;

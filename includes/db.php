@@ -28,6 +28,21 @@ class Database
         }
     }
 
+    public function beginTransaction()
+    {
+        $this->connection->begin_transaction();
+    }
+
+    public function commitTransaction()
+    {
+        $this->connection->commit();
+    }
+
+    public function rollbackTransaction()
+    {
+        $this->connection->rollback();
+    }
+
     public function prepare($sql)
     {
         return $this->connection->prepare($sql);
@@ -98,10 +113,14 @@ class Database
     public function getUpcomingAppointmentsByPatientId($patientId)
     {
         $stmt = $this->connection->prepare("
-            SELECT a.*, u.fullname as doctor_name
+            SELECT 
+                a.*, 
+                u.fullname as doctor_name,
+                b.name AS branch_name  -- ADDED: Fetch branch name and alias it
             FROM appointments a
             INNER JOIN doctors d ON a.doctor_id = d.id
             INNER JOIN users u ON d.user_id = u.id
+            LEFT JOIN branches b ON a.branch_id = b.id -- ADDED: LEFT JOIN branches table
             WHERE a.patient_id = ? AND a.appointment_date >= CURDATE()
             ORDER BY a.appointment_date ASC, a.appointment_time ASC
         ");
@@ -178,14 +197,14 @@ class Database
         return $bookedSlots;
     }
 
-    public function createAppointment($patientId, $doctorId, $appointmentDate, $appointmentTime, $reason)
+    public function createAppointment($patientId, $doctorId, $branchId, $appointmentDate, $appointmentTime, $reason)
     {
         $status = 'pending';
         $stmt = $this->connection->prepare("
-            INSERT INTO appointments (patient_id, doctor_id, appointment_date, appointment_time, status, reason)
-            VALUES (?, ?, ?, ?, ?, ?)
+            INSERT INTO appointments (patient_id, doctor_id, branch_id, appointment_date, appointment_time, status, reason)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
         ");
-        $stmt->bind_param("isssss", $patientId, $doctorId, $appointmentDate, $appointmentTime, $status, $reason);
+        $stmt->bind_param("iiissss", $patientId, $doctorId, $branchId, $appointmentDate, $appointmentTime, $status, $reason);
         $stmt->execute();
 
         return $stmt->affected_rows > 0;
@@ -348,11 +367,16 @@ class Database
     {
         $today = date("Y-m-d"); // Get today's date
         $stmt = $this->connection->prepare("
-            SELECT a.*, p.fullname as patient_name, u.fullname as doctor_name
+            SELECT
+                a.*,
+                p.fullname as patient_name,
+                u.fullname as doctor_name,
+                b.name AS branch_name  -- ADDED: Fetch branch name and alias it
             FROM appointments a
             INNER JOIN users p ON a.patient_id = p.id
             INNER JOIN doctors d ON a.doctor_id = d.id
             INNER JOIN users u ON d.user_id = u.id  -- Join with users table again for doctor's name
+            LEFT JOIN branches b ON a.branch_id = b.id -- ADDED: LEFT JOIN branches table
             WHERE DATE(a.appointment_date) = ?
         ");
         $stmt->bind_param("s", $today);
@@ -482,6 +506,17 @@ class Database
         return $stmt->insert_id;
     }
 
+    public function createStaff($userId, $staffDepartment = null, $staffPosition = null, $branchId = null) // Updated to accept $branchId
+    {
+        $stmt = $this->connection->prepare("
+            INSERT INTO staff (user_id, staff_department, staff_position, branch_id)  -- Added branch_id to INSERT columns
+            VALUES (?, ?, ?, ?)  -- Added placeholder for branch_id
+        ");
+        $stmt->bind_param("issi", $userId, $staffDepartment, $staffPosition, $branchId); // Added "i" for branchId and $branchId to bind_param
+        $stmt->execute();
+        return $stmt->affected_rows > 0;
+    }
+
     public function createDoctor($userId, $specialty, $qualifications, $availability, $branchId)
     {
         $stmt = $this->connection->prepare("
@@ -496,10 +531,17 @@ class Database
     public function getAppointmentById($appointmentId)
     {
         $stmt = $this->connection->prepare("
-            SELECT a.*, p.fullname as patient_name, d.fullname as doctor_name, d.specialty as doctor_specialty
+            SELECT
+                a.*,
+                p.fullname as patient_name,
+                u.fullname as doctor_name,
+                doc.specialty as doctor_specialty,
+                b.name AS branch_name  -- ADDED: Fetch branch name and alias it
             FROM appointments a
             INNER JOIN users p ON a.patient_id = p.id
-            INNER JOIN doctors d ON a.doctor_id = d.user_id
+            INNER JOIN doctors doc ON a.doctor_id = doc.id
+            INNER JOIN users u ON doc.user_id = u.id
+            LEFT JOIN branches b ON a.branch_id = b.id -- ADDED: LEFT JOIN branches table
             WHERE a.id = ?
         ");
         $stmt->bind_param("i", $appointmentId);
@@ -537,14 +579,20 @@ class Database
         return $result->fetch_all(MYSQLI_ASSOC);
     }
 
-    public function searchAppointments($searchQuery, $searchDate)
+    public function searchAppointments($searchQuery, $searchDate, $branchFilter = 0) // Updated to accept $branchFilter
     {
         $conditions = [];
         $params = [];
         $types = "";
 
+        if ($branchFilter > 0) {  // Filter by branch if branchFilter is greater than 0 (valid branch ID)
+            $conditions[] = "a.branch_id = ?";
+            $params[] = $branchFilter;
+            $types .= "i";
+        }
+
         if (!empty($searchQuery)) {
-            $conditions[] = "(p.fullname LIKE ? OR u.fullname LIKE ?)"; // Corrected to use 'u.fullname' for doctor's name
+            $conditions[] = "(p.fullname LIKE ? OR u.fullname LIKE ?)";
             $params[] = "%" . $searchQuery . "%";
             $params[] = "%" . $searchQuery . "%";
             $types .= "ss";
@@ -562,11 +610,16 @@ class Database
         }
 
         $stmt = $this->connection->prepare("
-            SELECT a.*, p.fullname as patient_name, u.fullname as doctor_name  -- Corrected to use 'u.fullname' for doctor's name
+            SELECT 
+                a.*, 
+                p.fullname as patient_name, 
+                u.fullname as doctor_name,
+                b.name AS branch_name   -- ADDED: Fetch branch name and alias it
             FROM appointments a
             INNER JOIN users p ON a.patient_id = p.id
-            INNER JOIN doctors doc ON a.doctor_id = doc.id  -- Alias doctors table as 'doc' to avoid alias conflict
-            INNER JOIN users u ON doc.user_id = u.id         -- Join doctors 'doc' with users 'u' to get doctor's fullname
+            INNER JOIN doctors doc ON a.doctor_id = doc.id 
+            INNER JOIN users u ON doc.user_id = u.id        
+            LEFT JOIN branches b ON a.branch_id = b.id    -- ADDED: LEFT JOIN to fetch branch name
             $whereClause
             ORDER BY a.appointment_date, a.appointment_time
         ");
@@ -601,9 +654,14 @@ class Database
     public function getPastAppointmentsByPatientId($patientId)
     {
         $stmt = $this->connection->prepare("
-            SELECT a.*, d.fullname as doctor_name
+            SELECT 
+                a.*, 
+                u.fullname as doctor_name,
+                b.name AS branch_name  -- ADDED: Fetch branch name and alias it
             FROM appointments a
             INNER JOIN doctors d ON a.doctor_id = d.user_id
+            INNER JOIN users u ON d.user_id = u.id
+            LEFT JOIN branches b ON a.branch_id = b.id -- ADDED: LEFT JOIN branches table
             WHERE a.patient_id = ? AND a.appointment_date < CURDATE()
             ORDER BY a.appointment_date DESC, a.appointment_time DESC
         ");
@@ -776,15 +834,101 @@ class Database
     public function getAllAppointments()
     {
         $stmt = $this->connection->prepare("
-            SELECT a.*, p.fullname as patient_name, u.fullname as doctor_name
+            SELECT a.*, p.fullname as patient_name, u.fullname as doctor_name, b.name AS branch_name
             FROM appointments a
             INNER JOIN users p ON a.patient_id = p.id
             INNER JOIN doctors d ON a.doctor_id = d.id
             INNER JOIN users u ON d.user_id = u.id
+            LEFT JOIN branches b ON a.branch_id = b.id
             ORDER BY a.appointment_date, a.appointment_time DESC
         ");
         $stmt->execute();
         $result = $stmt->get_result();
         return $result->fetch_all(MYSQLI_ASSOC);
+    }
+
+    public function getDoctorsByBranchAndSearch($branchId = null, $searchTerm = '')
+    {
+        $conditions = [];
+        $params = [];
+        $types = "";
+
+        if ($branchId !== null) {
+            $conditions[] = "d.branch_id = ?";
+            $params[] = $branchId;
+            $types .= "i";
+        }
+
+        if (!empty($searchTerm)) {
+            $searchTermParam = "%" . $searchTerm . "%";
+            $conditions[] = "(u.fullname LIKE ? OR d.specialty LIKE ?)";
+            $params[] = $searchTermParam;
+            $params[] = $searchTermParam;
+            $types .= "ss";
+        }
+
+        $whereClause = "";
+        if (!empty($conditions)) {
+            $whereClause = "WHERE " . implode(" AND ", $conditions);
+        }
+
+        $stmt = $this->connection->prepare("
+            SELECT 
+                d.id, 
+                u.fullname, 
+                d.specialty,
+                b.name AS branch_name  -- ADDED: Fetch branch name and alias it
+            FROM doctors d
+            INNER JOIN users u ON d.user_id = u.id
+            LEFT JOIN branches b ON d.branch_id = b.id  -- ADDED: LEFT JOIN to fetch branch name
+            $whereClause
+            ORDER BY u.fullname ASC
+        ");
+
+        if (!empty($params)) {
+            $stmt->bind_param($types, ...$params);
+        }
+
+        $stmt->execute();
+        $result = $stmt->get_result();
+        return $result->fetch_all(MYSQLI_ASSOC);
+    }
+
+    public function updateStaffUser($userId, $fullname, $email, $userType, $phone, $address, $staffDepartment, $staffPosition, $branchId)
+    {
+        // Begin transaction to ensure atomicity
+        $this->connection->begin_transaction();
+
+        try {
+            // 1. Update general user information in the 'users' table
+            $stmtUser = $this->connection->prepare("
+                UPDATE users SET fullname = ?, email = ?, user_type = ?, phone = ?, address = ?
+                WHERE id = ?
+            ");
+            $stmtUser->bind_param("sssssi", $fullname, $email, $userType, $phone, $address, $userId);
+            if (!$stmtUser->execute()) {
+                throw new Exception("Error updating user record."); // Throw exception if user update fails
+            }
+
+            // 2. Update staff-specific information in the 'staff' table, including branch_id
+            $stmtStaff = $this->connection->prepare("
+                UPDATE staff SET staff_department = ?, staff_position = ?, branch_id = ?
+                WHERE user_id = ?
+            ");
+            $stmtStaff->bind_param("ssii", $staffDepartment, $staffPosition, $branchId, $userId); // Include branchId in update
+            if (!$stmtStaff->execute()) {
+                throw new Exception("Error updating staff record."); // Throw exception if staff update fails
+            }
+
+            // Commit transaction if both updates are successful
+            $this->connection->commit();
+            return true;
+
+        } catch (Exception $e) {
+            // Rollback transaction in case of any error
+            $this->connection->rollback();
+            error_log("Error updating staff user: " . $e->getMessage()); // Log error for debugging
+            return false;
+        }
     }
 }

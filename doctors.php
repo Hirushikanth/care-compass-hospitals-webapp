@@ -167,7 +167,7 @@ $doctors = $db->getAllDoctors();
                                 <img src="assets/images/DoctorPlaceholder.jpg" class="card-img-top" alt="Dr. <?= htmlspecialchars($doctor['fullname']) ?>"> <!-- Replace placeholder image if needed -->
                                 <div class="doctor-card-body">
                                     <h3 class="doctor-card-title">Dr. <?= htmlspecialchars($doctor['fullname']) ?></h3>
-                                    <p class="doctor-card-specialty"><?= htmlspecialchars($doctor['specialty']) ?></p>
+                                    <p class="doctor-card-specialty"><?= htmlspecialchars($doctor['specialty'] ?? '') ?></p>
                                     <a href="doctor_profile.php?id=<?= $doctor['id'] ?>" class="btn btn-outline-primary">View Profile</a> <!-- Link to doctor profile page (not created yet) -->
                                 </div>
                             </div>

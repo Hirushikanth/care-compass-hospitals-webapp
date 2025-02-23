@@ -215,6 +215,7 @@ if (isset($_GET['logout'])) {
                                             <th>Time</th>
                                             <th>Patient</th>
                                             <th>Doctor</th>
+                                            <th>Branch</th>
                                             <th>Status</th>
                                             <th></th>
                                         </tr>
@@ -225,6 +226,7 @@ if (isset($_GET['logout'])) {
                                                 <td><?= htmlspecialchars($appointment['appointment_time']) ?></td>
                                                 <td><?= htmlspecialchars($appointment['patient_name']) ?></td>
                                                 <td><?= htmlspecialchars($appointment['doctor_name']) ?></td>
+                                                <td><?= htmlspecialchars($appointment['branch_name'] ?: 'N/A') ?></td>
                                                 <td><?= htmlspecialchars($appointment['status']) ?></td>
                                                 <td class="text-end">
                                                     <a href="view_appointment.php?id=<?= $appointment['id'] ?>" class="btn btn-sm btn-info"><i class="bi bi-eye-fill"></i></a>

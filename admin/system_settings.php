@@ -17,24 +17,27 @@ if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] != 'admin') {
 
 $db = new Database();
 
-// Handle form submission
+// Handle form submission for general settings
 if (isset($_POST['update_settings'])) {
     $hospitalName = sanitize_input($_POST['hospital_name']);
-    // ... (Update other settings as needed)
+    // ... (Update other general settings as needed)
 
     $success = $db->updateSetting('hospital_name', $hospitalName);
-    // ... (Update other settings as needed)
+    // ... (Update other general settings as needed)
 
     if ($success) {
-        echo '<div class="alert alert-success">Settings updated successfully!</div>';
+        echo '<div class="alert alert-success">General settings updated successfully!</div>';
     } else {
-        echo '<div class="alert alert-danger">Error updating settings.</div>';
+        echo '<div class="alert alert-danger">Error updating general settings.</div>';
     }
 }
 
 // Fetch current settings
 $hospitalName = $db->getSetting('hospital_name');
 // ... (Fetch other settings as needed)
+
+// Fetch all branches for display in settings
+$branches = $db->getAllBranches();
 ?>
 
 <!DOCTYPE html>
@@ -71,6 +74,7 @@ $hospitalName = $db->getSetting('hospital_name');
             box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.05);
             transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
             overflow: hidden;
+            margin-bottom: 2rem; /* Added margin between cards */
         }
         .dashboard-card:hover {
             transform: scale(1.01);
@@ -126,6 +130,25 @@ $hospitalName = $db->getSetting('hospital_name');
             border-color: #4e555b;
             box-shadow: 0 0 0 0.2rem rgba(108, 117, 125, 0.5);
         }
+        .table {
+            font-size: 0.95rem;
+            margin-bottom: 0;
+        }
+        .table th {
+            font-weight: 600;
+            color: #046A7A;
+            border-bottom: 2px solid rgba(4, 106, 122, 0.2);
+        }
+        .table tbody tr:hover {
+            background-color: #f8f9fa;
+        }
+        .table td {
+            padding: 0.75rem 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+        .table td:last-child {
+            text-align: right;
+        }
     </style>
 </head>
 <body>
@@ -150,7 +173,7 @@ $hospitalName = $db->getSetting('hospital_name');
                         <?php if (isset($_POST['update_settings'])): ?>
                             <?php if ($success): ?>
                                 <div class="alert alert-success" role="alert">
-                                    Settings updated successfully!
+                                    General settings updated successfully!
                                 </div>
                             <?php else: ?>
                                 <div class="alert alert-danger" role="alert">
@@ -166,14 +189,61 @@ $hospitalName = $db->getSetting('hospital_name');
 
                             <div class="d-grid gap-2">
                                 <button type="submit" name="update_settings" class="btn btn-primary">Update Settings</button>
-                                <a href="dashboard.php" class="btn btn-secondary">Back to Dashboard</a>
                             </div>
                         </form>
                     </div>
                 </div>
             </div>
         </div>
+
+        <div class="row justify-content-center">  <!-- New Branch Settings Card -->
+            <div class="col-md-8">
+                <div class="dashboard-card">
+                    <div class="dashboard-card-header">
+                        <h3 class="mb-0"><i class="bi bi-building me-2"></i>Branch Settings</h3>
+                    </div>
+                    <div class="card-body">
+                        <p>Manage hospital branches and locations.</p>
+                        <div class="mb-3">
+                            <a href="manage_branches.php" class="btn btn-primary"><i class="bi bi-building-fill-add me-1"></i> Manage Branches</a>
+                        </div>
+
+                        <h4>Current Branches:</h4>
+                        <?php if ($branches): ?>
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Name</th>
+                                            <th>City</th>
+                                            <th>Phone</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <?php foreach ($branches as $branch): ?>
+                                            <tr>
+                                                <td><?= htmlspecialchars($branch['name']) ?></td>
+                                                <td><?= htmlspecialchars($branch['city'] ?: 'N/A') ?></td>
+                                                <td><?= htmlspecialchars($branch['phone'] ?: 'N/A') ?></td>
+                                            </tr>
+                                        <?php endforeach; ?>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <?php else: ?>
+                            <p class="text-muted">No branches added yet.</p>
+                        <?php endif; ?>
+                    </div>
+                </div>
+            </div>
+        </div>
     </main>
+
+    <footer class="mt-5 py-3 text-center text-muted">
+        <div class="container">
+            <p>© 2023 Care Compass Connect. All rights reserved.</p>
+        </div>
+    </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>

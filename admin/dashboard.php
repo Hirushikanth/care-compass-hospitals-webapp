@@ -211,6 +211,7 @@ $doctors = $db->getAllDoctors(); // Implement this function in db.php
                                         <tr>
                                             <th>Name</th>
                                             <th>Specialty</th>
+                                            <th>Branch</th>
                                             <th></th>
                                         </tr>
                                     </thead>
@@ -218,7 +219,8 @@ $doctors = $db->getAllDoctors(); // Implement this function in db.php
                                         <?php foreach ($doctors as $doctor): ?>
                                             <tr>
                                                 <td><?= htmlspecialchars($doctor['fullname']) ?></td>
-                                                <td><?= htmlspecialchars($doctor['specialty']) ?></td>
+                                                <td><?= htmlspecialchars($doctor['specialty'] ?? 'N/A') ?></td>
+                                                <td><?= htmlspecialchars($doctor['branch_name'] ?: 'N/A') ?></td>
                                                 <td class="text-end">
                                                     <a href="edit_doctor.php?id=<?= $doctor['id'] ?>" class="btn btn-sm btn-outline-primary"><i class="bi bi-pencil-square"></i> Edit</a>
                                                     <a href="delete_doctor.php?id=<?= $doctor['id'] ?>" class="btn btn-sm btn-outline-danger" onclick="return confirm('Are you sure?')"><i class="bi bi-trash"></i> Delete</a>

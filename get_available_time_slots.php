@@ -20,8 +20,8 @@ if (isset($_POST['doctor_id']) && isset($_POST['date'])) {
 
     // Generate available time slots (e.g., from 9 AM to 5 PM with 30-minute intervals)
     $start = strtotime('09:00');
-    $end = strtotime('17:00');
-    $interval = 1800; // 30 minutes in seconds
+    $end = strtotime('22:00');
+    $interval = 900; // 15 minutes in seconds
 
     $availableSlots = [];
     for ($time = $start; $time < $end; $time += $interval) {

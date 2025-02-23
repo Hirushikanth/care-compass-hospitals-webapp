@@ -17,15 +17,19 @@ if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] != 'staff') {
 
 $db = new Database();
 
+// Fetch branches for the branch filter dropdown
+$branches = $db->getAllBranches();
+
 // Handle search query
 $searchQuery = isset($_GET['search_query']) ? sanitize_input($_GET['search_query']) : '';
 $searchDate = isset($_GET['search_date']) ? sanitize_input($_GET['search_date']) : '';
+$branchFilter = isset($_GET['branch_filter']) ? intval($_GET['branch_filter']) : 0; // Get branch filter ID
 $appointments = [];
 
-if ($searchQuery || $searchDate) {
-    $appointments = $db->searchAppointments($searchQuery, $searchDate); // Implement this in db.php
+if ($searchQuery || $searchDate || $branchFilter) { // Include branchFilter in condition
+    $appointments = $db->searchAppointments($searchQuery, $searchDate, $branchFilter); // Pass branchFilter to searchAppointments
 } else {
-    // Fetch all appointments if no search query is provided (optional)
+    // Optionally, Fetch all appointments (or a limited set) if no search criteria is provided
     // $appointments = $db->getAllAppointments();
 }
 ?>
@@ -36,94 +40,34 @@ if ($searchQuery || $searchDate) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Appointment Search - Care Compass Connect</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
-    <style>
-        body {
-            background-color: #f0f8ff; /* Light background from the palette */
-            font-family: 'Nunito', sans-serif;
-            color: #343a40;
-        }
-        .search-header {
-            background-color: #046A7A; /* Dark teal from the palette */
-            color: white;
-            padding: 2.5rem 0;
-            margin-bottom: 3rem;
-        }
-        .search-header h2 {
-            font-size: 2rem;
-            font-weight: 700;
-            margin-bottom: 0;
-        }
-        .search-card {
-            background-color: #fff;
-            border-radius: 0.75rem;
-            box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.05);
-            overflow: hidden;
-        }
-        .search-card-body {
-            padding: 2rem;
-        }
-        .form-control {
-            border-radius: 0.3rem;
-        }
-        .btn-primary {
-            background-color: #046A7A;
-            border-color: #046A7A;
-            transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out;
-        }
-        .btn-primary:hover, .btn-primary:focus {
-            background-color: #034e5a;
-            border-color: #034e5a;
-            box-shadow: 0 0 0 0.2rem rgba(4, 106, 122, 0.5);
-        }
-        .table {
-            font-size: 0.95rem;
-        }
-        .table th {
-            font-weight: 600;
-            color: #046A7A;
-            border-bottom: 2px solid rgba(4, 106, 122, 0.2);
-        }
-        .table tbody tr:hover {
-            background-color: #f8f9fa;
-        }
-        .table td {
-            padding: 0.75rem 0;
-            border-bottom: 1px solid #e9ecef;
-        }
-        .btn-info, .btn-success, .btn-danger {
-            font-size: 0.85rem;
-        }
-        .back-link {
-            margin-top: 2rem;
-        }
-    </style>
+    <link href="../assets/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/css/style.css">
 </head>
 <body>
-    <header class="search-header">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-12">
-                    <h2 class="mb-0">Appointment Search</h2>
-                </div>
-            </div>
-        </div>
-    </header>
+    <?php include('../includes/header.php'); ?>
 
     <main class="container">
         <div class="search-card">
             <div class="search-card-body">
+                <h2 class="mb-4">Appointment Search</h2>
                 <form method="get" class="mb-4">
-                    <div class="row g-3">
-                        <div class="col-md-5">
-                            <input type="text" class="form-control" name="search_query" placeholder="Search by patient or doctor name" value="<?= htmlspecialchars($searchQuery) ?>">
+                    <div class="row g-3 align-items-end">
+                        <div class="col-md-4">
+                            <label for="search_query" class="form-label">Search Patient/Doctor</label>
+                            <input type="text" class="form-control" id="search_query" name="search_query" placeholder="Patient or doctor name" value="<?= htmlspecialchars($searchQuery) ?>">
                         </div>
-                        <div class="col-md-5">
-                            <input type="date" class="form-control" name="search_date" value="<?= htmlspecialchars($searchDate) ?>">
+                        <div class="col-md-3">
+                            <label for="search_date" class="form-label">Date</label>
+                            <input type="date" class="form-control" id="search_date" name="search_date" value="<?= htmlspecialchars($searchDate) ?>">
+                        </div>
+                        <div class="col-md-3">
+                            <label for="branch_filter" class="form-label">Filter by Branch</label> <!-- Branch Filter Dropdown -->
+                            <select class="form-control" id="branch_filter" name="branch_filter">
+                                <option value="0">-- All Branches --</option>
+                                <?php foreach ($branches as $branch): ?>
+                                    <option value="<?= htmlspecialchars($branch['id']) ?>" <?= ($branchFilter == $branch['id'] ) ? 'selected' : '' ?>><?= htmlspecialchars($branch['name']) ?></option>
+                                <?php endforeach; ?>
+                            </select>
                         </div>
                         <div class="col-md-2">
                             <button class="btn btn-primary w-100" type="submit">Search</button>
@@ -131,7 +75,7 @@ if ($searchQuery || $searchDate) {
                     </div>
                 </form>
 
-                <?php if ($searchQuery || $searchDate): ?>
+                <?php if ($searchQuery || $searchDate || $branchFilter): ?>
                     <h3 class="mb-3">Search Results:</h3>
                     <?php if ($appointments): ?>
                         <div class="table-responsive">
@@ -140,6 +84,7 @@ if ($searchQuery || $searchDate) {
                                     <tr>
                                         <th>Patient</th>
                                         <th>Doctor</th>
+                                        <th>Branch</th> <!-- New Branch Column -->
                                         <th>Date</th>
                                         <th>Time</th>
                                         <th>Status</th>
@@ -151,11 +96,12 @@ if ($searchQuery || $searchDate) {
                                         <tr>
                                             <td><?= htmlspecialchars($appointment['patient_name']) ?></td>
                                             <td><?= htmlspecialchars($appointment['doctor_name']) ?></td>
+                                            <td><?= htmlspecialchars($appointment['branch_name'] ?: 'N/A') ?></td> <!-- Display Branch Name -->
                                             <td><?= htmlspecialchars($appointment['appointment_date']) ?></td>
                                             <td><?= htmlspecialchars($appointment['appointment_time']) ?></td>
                                             <td><?= htmlspecialchars($appointment['status']) ?></td>
                                             <td>
-                                                <a href="../view_appointment.php?id=<?= $appointment['id'] ?>" class="btn btn-sm btn-info"><i class="bi bi-eye"></i> View</a>
+                                                <a href="view_appointment.php?id=<?= $appointment['id'] ?>" class="btn btn-sm btn-info"><i class="bi bi-eye"></i> View</a>
                                                 <?php if ($appointment['status'] == 'pending'): ?>
                                                     <a href="confirm_appointment.php?id=<?= $appointment['id'] ?>" class="btn btn-sm btn-success"><i class="bi bi-check-circle"></i> Confirm</a>
                                                     <a href="cancel_appointment.php?id=<?= $appointment['id'] ?>" class="btn btn-sm btn-danger"><i class="bi bi-x-circle"></i> Cancel</a>
@@ -178,6 +124,7 @@ if ($searchQuery || $searchDate) {
         </div>
     </main>
 
+    <?php include('../includes/footer.php'); ?>
     <script src="../assets/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
