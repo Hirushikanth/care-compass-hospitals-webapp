@@ -873,9 +873,9 @@ class Database
         }
 
         $stmt = $this->connection->prepare("
-            SELECT 
-                d.id, 
-                u.fullname, 
+            SELECT
+                d.id,
+                u.fullname,
                 d.specialty,
                 b.name AS branch_name  -- ADDED: Fetch branch name and alias it
             FROM doctors d
@@ -890,6 +890,12 @@ class Database
         }
 
         $stmt->execute();
+
+        if ($stmt->error) {
+            error_log("Database query error in getDoctorsByBranchAndSearch: " . $stmt->error);
+            return false; // Indicate query failure
+        }
+
         $result = $stmt->get_result();
         return $result->fetch_all(MYSQLI_ASSOC);
     }

@@ -37,4 +37,13 @@ function login_user($db, $email, $password) {
     }
     return false;
 }
+
+function isValidDate($date) {
+    $d = DateTime::createFromFormat('Y-m-d', $date);
+    return $d && $d->format('Y-m-d') === $date;
+}
+
+function isValidTime($time) {
+    return preg_match('/^([0-1]?[0-9]|2[0-3]):([0-5][0-9])$/', $time);
+}
 ?>

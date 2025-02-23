@@ -17,75 +17,76 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['user_role'] != 'patient' && $_SE
 
 $db = new Database();
 
-// Fetch all branches for branch selection dropdown
-$branches = $db->getAllBranches(); // Fetch branches
+// Fetch data for dropdowns (branches)
+$branches = $db->getAllBranches();
+
+// Initialize variables for form values and errors
+$branchId = $doctorId = $appointmentDate = $appointmentTime = $reason = '';
+$errors = [];
 
 // Handle form submission
 if (isset($_POST['book_appointment'])) {
-    $branchId = $_POST['branch_id']; // Get branch ID from form  <- NEW
+    $branchId = $_POST['branch_id'];
     $doctorId = $_POST['doctor_id'];
     $appointmentDate = $_POST['appointment_date'];
     $appointmentTime = $_POST['appointment_time'];
-    $reason = sanitize_input($_POST['reason']);
-    $patientId = $_SESSION['user_id']; // Default to logged-in user
+    $reason = sanitize_input($_POST['reason']); // Sanitize reason
+    $patientId = $_SESSION['user_id'];
 
-    // If staff is booking, they might be booking for another patient.
     if ($_SESSION['user_role'] == 'staff' && isset($_POST['patient_id_for_booking']) && !empty($_POST['patient_id_for_booking'])) {
         $patientId = $_POST['patient_id_for_booking'];
     }
 
-    // Server-side validation
-    $errors = [];
-
-    if (empty($branchId)) { // Validate branch selection  <- NEW
-        $errors[] = "Please select a branch.";
-    }
-    if (empty($doctorId) || empty($appointmentDate) || empty($appointmentTime)) {
-        $errors[] = "Please fill in all required fields.";
+    // --- SERVER-SIDE VALIDATION ---
+    if (empty($branchId)) {
+        $errors['branch_id'] = "Please select a branch.";
+    } elseif (!is_numeric($branchId) || $branchId <= 0) {
+        $errors['branch_id'] = "Please select a valid branch.";
     }
 
-    // Check if date and time are in the future
-    $appointmentDateTime = new DateTime($appointmentDate . ' ' . $appointmentTime);
-    $now = new DateTime();
-
-    if ($appointmentDateTime < $now) {
-        $errors[] = "Please select a future date and time.";
+    if (empty($doctorId)) {
+        $errors['doctor_id'] = "Please select a doctor.";
+    } elseif (!is_numeric($doctorId) || $doctorId <= 0) {
+        $errors['doctor_id'] = "Please select a valid doctor.";
     }
 
-    // Check if the time slot is valid (HH:MM format)
-    if (!preg_match("/^([0-1][0-9]|2[0-3]):([0-5][0-9])$/", $appointmentTime)) {
-        $errors[] = "Invalid time format.";
+    if (empty($appointmentDate)) {
+        $errors['appointment_date'] = "Please select an appointment date.";
+    } elseif (!isValidDate($appointmentDate)) { // Using isValidDate function from functions.php
+        $errors['appointment_date'] = "Please select a valid date.";
+    } elseif (strtotime($appointmentDate) < strtotime(date('Y-m-d'))) {
+        $errors['appointment_date'] = "Please select a future date.";
     }
 
-    // If no errors, proceed with booking
-    if (empty($errors)) {
-        // Check if the selected time slot is still available
-        $bookedSlots = $db->getBookedTimeSlots($doctorId, $appointmentDate);
+    if (empty($appointmentTime)) {
+        $errors['appointment_time'] = "Please select an appointment time.";
+    } elseif (!isValidTime($appointmentTime)) { // Using isValidTime function from functions.php
+        $errors['appointment_time'] = "Please select a valid time.";
+    } elseif (strtotime($appointmentDate . ' ' . $appointmentTime) <= time()) {
+        $errors['appointment_time'] = "Please select a future time.";
+    } else {
+         $bookedSlots = $db->getBookedTimeSlots($doctorId, $appointmentDate);
         if (in_array($appointmentTime, $bookedSlots)) {
-            $errors[] = "Sorry, that time slot is no longer available.";
-        } else {
-            // Insert the appointment into the database
-            $branchId = $_POST['branch_id']; // Get branch ID from form
-
-            $success = $db->createAppointment($patientId, $doctorId, $branchId, $appointmentDate, $appointmentTime, $reason); // 6 arguments - CORRECT - Added $branchId
-
-            if ($success) {
-                $_SESSION['booking_success'] = true;
-                header("Location: patient/dashboard.php"); // Redirect to patient dashboard after success
-                exit;
-            } else {
-                $_SESSION['booking_error'] = true;
-                $_SESSION['error_message'] = "Error booking appointment. Please try again.";
-            }
+            $errors['appointment_time'] = "Sorry, that time slot is no longer available.";
         }
     }
 
-    // Set the error message in session if there are errors
-    if (!empty($errors)) {
-        $_SESSION['booking_error'] = true;
-        $_SESSION['error_message'] = implode("<br>", $errors); // Combine errors into a single string
+
+    // If no errors, proceed with booking
+    if (empty($errors)) {
+        $success = $db->createAppointment($patientId, $doctorId, $branchId, $appointmentDate, $appointmentTime, $reason);
+
+        if ($success) {
+            $_SESSION['booking_success'] = true;
+            header("Location: patient/dashboard.php"); // Redirect to patient dashboard after success
+            exit;
+        } else {
+            $_SESSION['booking_error'] = true;
+            $_SESSION['error_message'] = "Error booking appointment. Please try again.";
+        }
     }
 }
+
 ?>
 
 <!DOCTYPE html>
@@ -99,6 +100,7 @@ if (isset($_POST['book_appointment'])) {
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/style.css">
     <style>
         body {
             background-color: #f0f8ff; /* Light background from the palette */
@@ -113,6 +115,7 @@ if (isset($_POST['book_appointment'])) {
             text-align: center;
         }
         .booking-header h2 {
+            color: white;
             font-size: 2rem;
             font-weight: 700;
             margin-bottom: 0;
@@ -138,6 +141,7 @@ if (isset($_POST['book_appointment'])) {
             border-top-right-radius: 0.75rem;
         }
         .booking-card-header h3 {
+            color: white;
             font-size: 1.5rem;
             margin-bottom: 0;
             font-weight: 600;
@@ -151,6 +155,10 @@ if (isset($_POST['book_appointment'])) {
         }
         .form-control {
             border-radius: 0.3rem;
+        }
+        .form-control:focus {
+            border-color: #046A7A; /* Focus color */
+            box-shadow: 0 0 0 0.2rem rgba(4, 106, 122, 0.25); /* Focus shadow */
         }
         .btn-primary {
             background-color: #046A7A;
@@ -177,6 +185,9 @@ if (isset($_POST['book_appointment'])) {
             border-radius: 0.3rem;
             padding: 0.75rem 1rem;
             margin-bottom: 1rem;
+        }
+        .error-message {
+            font-size: 0.9rem;
         }
         .form-control:disabled{
             background-color: #ffffff;
@@ -213,14 +224,16 @@ if (isset($_POST['book_appointment'])) {
                 <?php endif; ?>
                 <form method="post">
                      <div class="mb-3">
-                        <label for="branch" class="form-label">Select Branch:</label>  <!-- New Branch Dropdown -->
-                        <select class="form-control" id="branch" name="branch_id" required>
+                        <label for="branch" class="form-label">Select Branch:</label>
+                        <select class="form-control <?php echo isset($errors['branch_id']) ? 'is-invalid' : ''; ?>" id="branch" name="branch_id" required>
                             <option value="">-- Select Branch --</option>
                             <?php foreach ($branches as $branch): ?>
-                                <option value="<?= $branch['id'] ?>"><?= htmlspecialchars($branch['name']) ?></option>
+                                <option value="<?= $branch['id'] ?>" <?= ($branchId == $branch['id']) ? 'selected' : '' ?>><?= htmlspecialchars($branch['name']) ?></option>
                             <?php endforeach; ?>
                         </select>
-                        <div id="branch-error" class="text-danger"></div>
+                        <?php if (isset($errors['branch_id'])): ?>
+                            <div class="error-message"><?= $errors['branch_id'] ?></div>
+                        <?php endif; ?>
                     </div>
                     <?php if ($_SESSION['user_role'] == 'staff'): ?>
                         <div class="mb-3">
@@ -238,32 +251,38 @@ if (isset($_POST['book_appointment'])) {
                     <?php endif; ?>
                     <div class="mb-3">
                         <label for="doctor" class="form-label">Select Doctor:</label>
-                        <select class="form-control" id="doctor" name="doctor_id" required disabled>  <!-- Doctor Dropdown - Initially Disabled -->
+                        <select class="form-control <?php echo isset($errors['doctor_id']) ? 'is-invalid' : ''; ?>" id="doctor" name="doctor_id" required disabled>  <!-- Doctor Dropdown - Initially Disabled -->
                             <option value="">-- Select Doctor --</option>
                             <!-- Doctors will be loaded here dynamically by JavaScript -->
                         </select>
-                        <div id="doctor-error" class="text-danger"></div>
+                        <?php if (isset($errors['doctor_id'])): ?>
+                            <div class="error-message"><?= $errors['doctor_id'] ?></div>
+                        <?php endif; ?>
                     </div>
 
                     <div class="mb-3">
                         <label for="date" class="form-label">Select Date:</label>
-                        <input type="date" class="form-control" id="date" name="appointment_date" required min="<?= date('Y-m-d'); ?>">
-                        <div id="date-error" class="text-danger"></div>
+                        <input type="date" class="form-control <?php echo isset($errors['appointment_date']) ? 'is-invalid' : ''; ?>" id="date" name="appointment_date" required min="<?= date('Y-m-d'); ?>" value="<?= htmlspecialchars($appointmentDate) ?>">
+                        <?php if (isset($errors['appointment_date'])): ?>
+                            <div class="error-message"><?= $errors['appointment_date'] ?></div>
+                        <?php endif; ?>
                     </div>
 
                     <div class="mb-3">
                         <label for="time" class="form-label">Select Time Slot:</label>
-                        <select class="form-control" id="time" name="appointment_time" required disabled>
+                        <select class="form-control <?php echo isset($errors['appointment_time']) ? 'is-invalid' : ''; ?>" id="time" name="appointment_time" required disabled>
                             <option value="">-- Select Time --</option>
                             <!-- Time slots will be loaded here based on the selected doctor and date -->
                         </select>
+                        <?php if (isset($errors['appointment_time'])): ?>
+                            <div class="error-message"><?= $errors['appointment_time'] ?></div>
+                        <?php endif; ?>
                         <div class="mt-2" id="loading-indicator" style="display: none;">Loading...</div>
-                        <div id="time-error" class="text-danger"></div>
                     </div>
 
                     <div class="mb-3">
-                        <label for="reason" class="form-label">Reason for Appointment:</label>
-                        <textarea class="form-control" id="reason" name="reason" rows="3"></textarea>
+                        <label for="reason" class="form-label">Reason for Appointment (Optional):</label>
+                        <textarea class="form-control" id="reason" name="reason" rows="3"><?= htmlspecialchars($reason) ?></textarea>
                     </div>
 
                     <div class="d-grid">
@@ -274,23 +293,25 @@ if (isset($_POST['book_appointment'])) {
         </div>
     </div>
 
+    <?php include('includes/footer.php'); ?>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        const branchSelect = document.getElementById('branch'); // Branch dropdown
+        const branchSelect = document.getElementById('branch');
         const doctorSelect = document.getElementById('doctor');
         const dateSelect = document.getElementById('date');
         const timeSelect = document.getElementById('time');
         const loadingIndicator = document.getElementById('loading-indicator');
 
         // Disable doctor and time select initially
-        doctorSelect.disabled = true;  // Doctor dropdown disabled initially
+        doctorSelect.disabled = true;
         timeSelect.disabled = true;
 
-        branchSelect.addEventListener('change', loadDoctorsByBranch); // Event listener for branch change
+        branchSelect.addEventListener('change', loadDoctorsByBranch);
         doctorSelect.addEventListener('change', loadAvailableTimeSlots);
         dateSelect.addEventListener('change', loadAvailableTimeSlots);
 
-        function loadDoctorsByBranch() { // Function to load doctors based on branch
+        function loadDoctorsByBranch() {
             const branchId = branchSelect.value;
 
             // Reset doctor select and disable it if no branch is selected
@@ -302,7 +323,7 @@ if (isset($_POST['book_appointment'])) {
 
             // Fetch doctors by branch using AJAX
             const xhr = new XMLHttpRequest();
-            xhr.open('POST', 'get_doctors_by_branch.php', true); // New PHP file to fetch doctors by branch
+            xhr.open('POST', 'get_doctors_by_branch.php', true);
             xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
             xhr.onload = function() {
                 if (xhr.status >= 200 && xhr.status < 300) {
@@ -317,7 +338,7 @@ if (isset($_POST['book_appointment'])) {
                 console.error("Request failed");
                 doctorSelect.innerHTML = '<option value="">Error loading doctors.</option>';
             };
-            xhr.send('branch_id=' + branchId); // Send branch ID to PHP
+            xhr.send('branch_id=' + branchId);
         }
 
 
