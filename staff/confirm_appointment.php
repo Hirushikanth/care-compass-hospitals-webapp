@@ -78,14 +78,13 @@ if (isset($_POST['confirm_appointment'])) {
 
             // Success message with PDF generation info (for now)
             $success_message = "Appointment confirmed successfully! Bill generated and saved temporarily to: " . $billFilePath;
+
+
         } else {
             $error_message = "Error confirming appointment and updating price.";
         }
     }
 }
-
-// Set active page for navigation highlighting
-$active_page = 'appointments';
 ?>
 
 <!DOCTYPE html>
@@ -95,121 +94,48 @@ $active_page = 'appointments';
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Confirm Appointment - Care Compass Connect</title>
     <link rel="stylesheet" href="../assets/css/bootstrap.min.css">
-    <link rel="stylesheet" href="../assets/css/style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <!-- Add your custom styles if needed -->
 </head>
 <body>
-    <!-- Header -->
-    <?php include('../includes/header.php'); ?>
+    <div class="container">
+        <h2>Confirm Appointment</h2>
 
-    <div class="container-fluid">
-        <div class="row">
-            <!-- Sidebar -->
-            <?php include('../includes/sidebar.php'); ?>
+        <?php if ($confirmation_success): ?>
+            <div class="alert alert-success"><?= $success_message ?></div>
+            <a href="dashboard.php" class="btn btn-secondary mt-3">Back to Dashboard</a>
+        <?php else: ?>
+            <?php if ($error_message): ?>
+                <div class="alert alert-danger"><?= htmlspecialchars($error_message) ?></div>
+            <?php endif; ?>
 
-            <!-- Main Content -->
-            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4">
-                <nav aria-label="breadcrumb">
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="dashboard.php">Dashboard</a></li>
-                        <li class="breadcrumb-item"><a href="appointments.php">Appointments</a></li>
-                        <li class="breadcrumb-item"><a href="view_appointment.php?id=<?= $appointmentId ?>">View Appointment</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">Confirm Appointment</li>
-                    </ol>
-                </nav>
+            <p>Are you sure you want to confirm the following appointment?</p>
+            <p><strong>Appointment ID:</strong> <?= htmlspecialchars($appointment['id']) ?></p>
+            <p><strong>Patient Name:</strong> <?= htmlspecialchars($appointment['patient_name']) ?></p>
+            <p><strong>Doctor Name:</strong> <?= htmlspecialchars($appointment['doctor_name']) ?></p>
+            <p><strong>Date:</strong> <?= htmlspecialchars($appointment['appointment_date']) ?></p>
+            <p><strong>Time:</strong> <?= htmlspecialchars($appointment['appointment_time']) ?></p>
 
-                <div class="card mb-4">
-                    <div class="card-header">
-                        <h5 class="card-title mb-0">Confirm Appointment</h5>
-                    </div>
-                    <div class="card-body">
-                        <?php if ($confirmation_success): ?>
-                            <div class="alert alert-success"><?= $success_message ?></div>
-                            <a href="dashboard.php" class="btn btn-primary mt-3"><i class="fas fa-tachometer-alt me-2"></i>Back to Dashboard</a>
-                            <a href="appointments.php" class="btn btn-secondary mt-3 ms-2"><i class="fas fa-calendar-check me-2"></i>View All Appointments</a>
-                        <?php else: ?>
-                            <?php if ($error_message): ?>
-                                <div class="alert alert-danger"><?= htmlspecialchars($error_message) ?></div>
-                            <?php endif; ?>
+            <div class="card mb-3">
+                <div class="card-body">
+                    <form method="post">
+                        <!-- ADD THIS HIDDEN INPUT FIELD for CSRF token -->
+                        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token) ?>">
 
-                            <div class="row mb-4">
-                                <div class="col-md-6">
-                                    <div class="card">
-                                        <div class="card-header bg-light">
-                                            <h6 class="mb-0">Appointment Details</h6>
-                                        </div>
-                                        <div class="card-body">
-                                            <table class="table table-borderless">
-                                                <tr>
-                                                    <th width="40%">Appointment ID:</th>
-                                                    <td><?= htmlspecialchars($appointment['id']) ?></td>
-                                                </tr>
-                                                <tr>
-                                                    <th>Patient Name:</th>
-                                                    <td><?= htmlspecialchars($appointment['patient_name']) ?></td>
-                                                </tr>
-                                                <tr>
-                                                    <th>Doctor Name:</th>
-                                                    <td><?= htmlspecialchars($appointment['doctor_name']) ?></td>
-                                                </tr>
-                                                <tr>
-                                                    <th>Date:</th>
-                                                    <td><?= htmlspecialchars($appointment['appointment_date']) ?></td>
-                                                </tr>
-                                                <tr>
-                                                    <th>Time:</th>
-                                                    <td><?= htmlspecialchars($appointment['appointment_time']) ?></td>
-                                                </tr>
-                                            </table>
-                                        </div>
-                                    </div>
-                                </div>
+                        <div class="mb-3">
+                            <label for="appointment_price" class="form-label">Appointment Price ($):</label>
+                            <input type="number" class="form-control" id="appointment_price" name="appointment_price" value="<?= htmlspecialchars($price) ?>" step="0.01" required>
+                        </div>
 
-                                <div class="col-md-6">
-                                    <div class="card">
-                                        <div class="card-header bg-light">
-                                            <h6 class="mb-0">Confirmation</h6>
-                                        </div>
-                                        <div class="card-body">
-                                            <p class="lead">Are you sure you want to confirm this appointment?</p>
-                                            <p>Confirming this appointment will generate a bill and update the appointment status.</p>
-                                            
-                                            <form method="post">
-                                                <!-- CSRF token -->
-                                                <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token) ?>">
-
-                                                <div class="mb-3">
-                                                    <label for="appointment_price" class="form-label">Appointment Price ($):</label>
-                                                    <div class="input-group">
-                                                        <span class="input-group-text"><i class="fas fa-dollar-sign"></i></span>
-                                                        <input type="number" class="form-control" id="appointment_price" name="appointment_price" value="<?= htmlspecialchars($price) ?>" step="0.01" required>
-                                                    </div>
-                                                </div>
-
-                                                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                                                    <button type="submit" name="confirm_appointment" class="btn btn-success">
-                                                        <i class="fas fa-check me-2"></i>Yes, Confirm Appointment
-                                                    </button>
-                                                    <a href="view_appointment.php?id=<?= $appointment['id'] ?>" class="btn btn-secondary ms-2">
-                                                        <i class="fas fa-times me-2"></i>No, Go Back
-                                                    </a>
-                                                </div>
-                                            </form>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        <?php endif; ?>
-                    </div>
+                        <button type="submit" name="confirm_appointment" class="btn btn-success">Yes, Confirm Appointment</button>
+                        <a href="view_appointment.php?id=<?= $appointment['id'] ?>" class="btn btn-secondary ms-2">No, Go Back</a>
+                    </form>
                 </div>
-            </main>
-        </div>
+            </div>
+
+
+        <?php endif; ?>
     </div>
 
-    <!-- Footer -->
-    <?php include('../includes/footer.php'); ?>
-
     <script src="../assets/js/bootstrap.bundle.min.js"></script>
-    <script src="../assets/js/scripts.js"></script>
 </body>
 </html>
