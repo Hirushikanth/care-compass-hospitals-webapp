@@ -43,8 +43,16 @@ $city = $branch['city'];
 $phone = $branch['phone'];
 $errors = [];
 
+// Generate CSRF token
+$csrf_token = generate_csrf_token();
+
 // Handle form submission
 if (isset($_POST['edit_branch'])) {
+    // Verify CSRF token
+    if (!verify_csrf_token()) {
+        die("CSRF token validation failed."); // Or handle error more gracefully
+    }
+
     $name = sanitize_input($_POST['name']);
     $address = sanitize_input($_POST['address']);
     $city = sanitize_input($_POST['city']);
@@ -99,6 +107,9 @@ if (isset($_POST['edit_branch'])) {
                     </div>
                 <?php endif; ?>
                 <form method="post">
+                    <!-- CSRF Token Field -->
+                    <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token) ?>">
+
                     <div class="mb-3">
                         <label for="name" class="form-label">Branch Name</label>
                         <input type="text" class="form-control" id="name" name="name" value="<?= htmlspecialchars($name) ?>" required>
@@ -128,6 +139,6 @@ if (isset($_POST['edit_branch'])) {
 
     <?php include('../includes/footer.php'); ?>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../assets/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

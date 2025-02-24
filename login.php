@@ -41,9 +41,17 @@ if (isset($_SESSION['user_id'])) {
     }
 }
 
+// Generate CSRF token
+$csrf_token = generate_csrf_token();
+
 // Handle login form submission
 $error_message = "";
 if (isset($_POST['login'])) {
+    // Verify CSRF token
+    if (!verify_csrf_token()) {
+        die("CSRF token validation failed."); // Or display a user-friendly error message and exit.
+    }
+
     $email = sanitize_input($_POST['email']);
     $password = $_POST['password'];
 
@@ -207,6 +215,9 @@ if (isset($_POST['login'])) {
                             </div>
                         <?php endif; ?>
                         <form method="post">
+                            <!-- CSRF Token Hidden Input -->
+                            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token) ?>">
+
                             <div class="mb-3">
                                 <label for="email" class="form-label">Email</label>
                                 <input type="email" class="form-control" id="email" name="email" required>

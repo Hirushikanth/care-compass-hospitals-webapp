@@ -25,8 +25,26 @@ if (!$branchId) {
     exit;
 }
 
+// Fetch branch data (for confirmation)
+$branch = $db->getBranchById($branchId);
+
+if (!$branch) {
+    $_SESSION['error_message'] = 'Branch not found.';
+    header("Location: manage_branches.php");
+    exit;
+}
+
+// Generate CSRF token BEFORE displaying the form
+$csrf_token = generate_csrf_token();
+
 // Handle branch deletion
 if (isset($_POST['delete_branch'])) {
+    // Verify CSRF token at the VERY BEGINNING of form processing
+    if (!verify_csrf_token()) {
+        // CSRF token verification failed!  Reject the request.
+        die("CSRF token validation failed."); // Or display a user-friendly error message and exit.
+    }
+
     $success = $db->deleteBranch($branchId); // Implement this in db.php
 
     if ($success) {
@@ -36,15 +54,6 @@ if (isset($_POST['delete_branch'])) {
     } else {
         $_SESSION['error_message'] = 'Error deleting branch.';
     }
-}
-
-// Fetch branch data (for confirmation)
-$branch = $db->getBranchById($branchId);
-
-if (!$branch) {
-    $_SESSION['error_message'] = 'Branch not found.';
-    header("Location: manage_branches.php");
-    exit;
 }
 ?>
 
@@ -80,6 +89,8 @@ if (!$branch) {
                 </ul>
 
                 <form method="post">
+                    <!-- ADD THIS HIDDEN INPUT FIELD for CSRF token -->
+                    <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token) ?>">
                     <button type="submit" name="delete_branch" class="btn btn-danger">
                         <i class="bi bi-trash me-1"></i> Yes, Delete Branch
                     </button>

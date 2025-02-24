@@ -17,8 +17,16 @@ if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] != 'admin') {
 
 $db = new Database();
 
+// Generate CSRF Token
+$csrf_token = generate_csrf_token();
+
 // Handle updating query status
 if (isset($_POST['update_status'])) {
+    // Verify CSRF Token
+    if (!verify_csrf_token()) {
+        die("CSRF token validation failed."); // Or handle the error more gracefully
+    }
+
     $queryId = $_POST['query_id'];
     $newStatus = $_POST['status'];
 
@@ -44,6 +52,7 @@ $queries = $db->getAllQueries(); // Implement this in db.php
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>View Queries - Care Compass Connect</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/css/style.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -199,6 +208,8 @@ $queries = $db->getAllQueries(); // Implement this in db.php
                                         <td><?= date('F j, Y, g:i a', strtotime($query['created_at'])) ?></td>
                                         <td class="text-end">
                                             <form method="post" class="d-flex justify-content-end align-items-center">
+                                                <!-- CSRF Token Field Added Here -->
+                                                <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token) ?>">
                                                 <input type="hidden" name="query_id" value="<?= $query['id'] ?>">
                                                 <select name="status" class="form-select form-select-sm me-2">
                                                     <option value="pending" <?= ($query['status'] == 'pending') ? 'selected' : '' ?>>Pending</option>
@@ -226,6 +237,6 @@ $queries = $db->getAllQueries(); // Implement this in db.php
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../assets/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

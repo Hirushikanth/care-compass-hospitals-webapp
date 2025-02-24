@@ -17,8 +17,16 @@ if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] != 'admin') {
 
 $db = new Database();
 
+// Generate CSRF token
+$csrf_token = generate_csrf_token();
+
 // Handle form submission for general settings
 if (isset($_POST['update_settings'])) {
+    // Verify CSRF token
+    if (!verify_csrf_token()) {
+        die("CSRF token validation failed."); // Or handle error more gracefully
+    }
+
     $hospitalName = sanitize_input($_POST['hospital_name']);
     // ... (Update other general settings as needed)
 
@@ -47,6 +55,7 @@ $branches = $db->getAllBranches();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>System Settings - Care Compass Connect</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/css/style.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -64,6 +73,7 @@ $branches = $db->getAllBranches();
             margin-bottom: 3rem;
         }
         .dashboard-header h2 {
+            color: white;
             font-size: 2rem;
             font-weight: 700;
             margin-bottom: 0;
@@ -88,6 +98,7 @@ $branches = $db->getAllBranches();
             border-top-right-radius: 0.75rem;
         }
         .dashboard-card-header h3 {
+            color: white;
             font-size: 1.5rem;
             margin-bottom: 0;
             font-weight: 600;
@@ -182,6 +193,9 @@ $branches = $db->getAllBranches();
                             <?php endif; ?>
                         <?php endif; ?>
                         <form method="post">
+                            <!-- CSRF Token Field -->
+                            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token) ?>">
+
                             <div class="mb-3">
                                 <label for="hospital_name" class="form-label">Hospital Name:</label>
                                 <input type="text" class="form-control" id="hospital_name" name="hospital_name" value="<?= htmlspecialchars($hospitalName) ?>" required>

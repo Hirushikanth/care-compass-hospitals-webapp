@@ -17,8 +17,17 @@ if (!isset($_SESSION['user_id'])) {
 
 $db = new Database();
 
+// Generate CSRF token BEFORE displaying the form
+$csrf_token = generate_csrf_token();
+
 // Handle form submission
 if (isset($_POST['submit_query'])) {
+    // Verify CSRF token at the VERY BEGINNING of form processing
+    if (!verify_csrf_token()) {
+        // CSRF token verification failed!  Reject the request.
+        die("CSRF token validation failed."); // Or display a user-friendly error message and exit.
+    }
+
     $userId = $_SESSION['user_id']; // Or get user ID from form if allowing non-logged-in users
     $subject = sanitize_input($_POST['subject']);
     $message = sanitize_input($_POST['message']);
@@ -67,6 +76,9 @@ if (isset($_POST['submit_query'])) {
         <h2>Submit a Query</h2>
 
         <form method="post" onsubmit="return validateForm()">
+            <!-- ADD THIS HIDDEN INPUT FIELD for CSRF token -->
+            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token) ?>">
+
             <div class="mb-3">
                 <label for="subject" class="form-label">Subject:</label>
                 <input type="text" class="form-control" id="subject" name="subject" required>

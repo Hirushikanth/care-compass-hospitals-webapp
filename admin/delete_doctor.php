@@ -17,6 +17,9 @@ if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] != 'admin') {
 
 $db = new Database();
 
+// Generate CSRF token
+$csrf_token = generate_csrf_token();
+
 // Get doctor ID from the URL
 $doctorId = isset($_GET['id']) ? $_GET['id'] : null;
 
@@ -27,6 +30,11 @@ if (!$doctorId) {
 
 // Handle doctor deletion
 if (isset($_POST['delete_doctor'])) {
+    // Verify CSRF token
+    if (!verify_csrf_token()) {
+        die("CSRF token validation failed."); // In real app, handle more gracefully
+    }
+
     $success = $db->deleteDoctor($doctorId); // Implement this in db.php
 
     if ($success) {
@@ -53,6 +61,7 @@ if (!$doctor) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Delete Doctor - Care Compass Connect</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/css/style.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -71,6 +80,7 @@ if (!$doctor) {
             text-align: center;
         }
         .dashboard-header h2 {
+            color: white;
             font-size: 2rem;
             font-weight: 700;
             margin-bottom: 0;
@@ -172,6 +182,8 @@ if (!$doctor) {
                         </div>
 
                         <form method="post" class="mt-3">
+                            <!-- CSRF Token Field -->
+                            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token) ?>">
                             <button type="submit" name="delete_doctor" class="btn btn-danger">
                                 <i class="bi bi-trash me-1"></i> Yes, Delete Doctor
                             </button>

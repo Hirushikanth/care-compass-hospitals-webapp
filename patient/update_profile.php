@@ -21,8 +21,17 @@ $patientId = $_SESSION['user_id'];
 // Fetch current patient information
 $patient = $db->getPatientById($patientId);
 
+// Generate CSRF token BEFORE displaying the form
+$csrf_token = generate_csrf_token();
+
 // Handle form submission
 if (isset($_POST['update_profile'])) {
+    // Verify CSRF token at the VERY BEGINNING of form processing
+    if (!verify_csrf_token()) {
+        // CSRF token verification failed!  Reject the request.
+        die("CSRF token validation failed."); // Or display a user-friendly error message and exit.
+    }
+
     $fullname = sanitize_input($_POST['fullname']);
     $email = sanitize_input($_POST['email']);
     $phone = sanitize_input($_POST['phone']);
@@ -161,6 +170,9 @@ if (isset($_POST['update_profile'])) {
                     </div>
                 <?php endif; ?>
                 <form method="post">
+                    <!-- CSRF Token Field -->
+                    <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token) ?>">
+
                     <div class="mb-3">
                         <label for="fullname" class="form-label">Full Name</label>
                         <input type="text" class="form-control" id="fullname" name="fullname" value="<?= htmlspecialchars($patient['fullname']) ?>" required>

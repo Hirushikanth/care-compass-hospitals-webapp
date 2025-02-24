@@ -22,10 +22,20 @@ if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] != 'admin') {
 $db = new Database();
 
 // Fetch all branches for the dropdown
-$branches = $db->getAllBranches(); // Fetch branches for branch selection dropdown
+$branches = $db->getAllBranches();
+
+// Generate CSRF token BEFORE displaying the form
+$csrf_token = generate_csrf_token();
 
 // Handle form submission
 if (isset($_POST['add_doctor'])) {
+    // Verify CSRF token at the VERY BEGINNING of form processing
+    if (!verify_csrf_token()) {
+        // CSRF token verification failed!  Reject the request.
+        die("CSRF token validation failed."); // Or display a user-friendly error message and exit.
+        // In a real application, you would handle this more gracefully, e.g., redirect to an error page.
+    }
+
     $fullname = sanitize_input($_POST['fullname']);
     $email = sanitize_input($_POST['email']);
     $password = $_POST['password']; // Hash this password!
@@ -108,6 +118,7 @@ if (isset($_POST['add_doctor'])) {
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/css/style.css">
     <style>
         body {
             background-color: #f0f8ff; /* Light background from the palette */
@@ -121,6 +132,7 @@ if (isset($_POST['add_doctor'])) {
             margin-bottom: 3rem;
         }
         .dashboard-header h2 {
+            color: white;
             font-size: 2rem;
             font-weight: 700;
             margin-bottom: 0;
@@ -144,6 +156,7 @@ if (isset($_POST['add_doctor'])) {
             border-top-right-radius: 0.75rem;
         }
         .dashboard-card-header h3 {
+            color: white;
             font-size: 1.5rem;
             margin-bottom: 0;
             font-weight: 600;
@@ -224,6 +237,9 @@ if (isset($_POST['add_doctor'])) {
                         endif;
                         ?>
                         <form method="post" onsubmit="return validateForm()">
+                            <!-- CSRF Token Field -->
+                            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token) ?>">
+
                             <div class="mb-3">
                                 <label for="fullname" class="form-label">Full Name:</label>
                                 <input type="text" class="form-control" id="fullname" name="fullname" value="<?= htmlspecialchars($fullname) ?>" required>

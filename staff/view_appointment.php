@@ -11,7 +11,7 @@ if (session_status() == PHP_SESSION_NONE) {
 
 // Check if the user is logged in
 if (!isset($_SESSION['user_id'])) {
-    header("Location: login.php");
+    header("Location: ../login.php");
     exit;
 }
 
@@ -35,11 +35,33 @@ if (!$appointment) {
 
 // Authorization check (make sure the user has permission to view this appointment)
 if ($_SESSION['user_role'] == 'patient' && $appointment['patient_id'] != $_SESSION['user_id']) {
-    header("Location: patient/dashboard.php"); // Unauthorized access for patients
+    header("Location: ../patient/dashboard.php"); // Unauthorized access for patients
     exit;
 } elseif ($_SESSION['user_role'] == 'staff') {
     // Staff are generally authorized to view all appointments for now
     // You might add more granular authorization checks for staff if needed
+}
+
+// Generate CSRF token
+$csrf_token = generate_csrf_token();
+
+// Handle appointment cancellation (converted to POST form)
+if (isset($_POST['cancel_appointment'])) {
+    // Verify CSRF token
+    if (!verify_csrf_token()) {
+        die("CSRF token validation failed."); // Or handle error more gracefully
+    }
+
+    $success = $db->updateAppointmentStatus($appointmentId, 'cancelled');
+
+    if ($success) {
+        // Redirect to the appropriate dashboard with a success message
+        $redirectUrl = ($_SESSION['user_role'] == 'patient') ? '../patient/dashboard.php' : 'dashboard.php';
+        header("Location: " . $redirectUrl . "?cancel_success=1");
+        exit;
+    } else {
+        echo '<div class="alert alert-danger">Error cancelling appointment.</div>';
+    }
 }
 
 ?>
@@ -93,16 +115,24 @@ if ($_SESSION['user_role'] == 'patient' && $appointment['patient_id'] != $_SESSI
                     <?php if ($_SESSION['user_role'] == 'staff'): ?>
                         <?php if ($appointment['status'] == 'pending'): ?>
                             <a href="confirm_appointment.php?id=<?= $appointment['id'] ?>" class="btn btn-success">Confirm Appointment</a>
-                            <a href="cancel_appointment.php?id=<?= $appointment['id'] ?>" class="btn btn-danger ms-2">Cancel Appointment</a>
+                            <!-- Cancel Appointment Form with CSRF Token -->
+                            <form method="post" class="d-inline-block ms-2">
+                                <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token) ?>">
+                                <button type="submit" name="cancel_appointment" class="btn btn-danger">Cancel Appointment</button>
+                            </form>
                         <?php endif; ?>
                         <a href="appointment_search.php" class="btn btn-secondary ms-2">Back to Search</a>
                         <a href="view_all_appointments.php" class="btn btn-secondary ms-2">View All Appointments</a>
                         <a href="dashboard.php" class="btn btn-secondary ms-2">Back to Dashboard</a>
                     <?php elseif ($_SESSION['user_role'] == 'patient'): ?>
                         <?php if ($appointment['status'] == 'pending'): ?>
-                            <a href="cancel_appointment.php?id=<?= $appointment['id'] ?>" class="btn btn-danger">Cancel Appointment</a>
+                            <!-- Cancel Appointment Form with CSRF Token -->
+                            <form method="post" class="d-inline-block">
+                                <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token) ?>">
+                                <button type="submit" name="cancel_appointment" class="btn btn-danger">Cancel Appointment</button>
+                            </form>
                         <?php endif; ?>
-                        <a href="patient/dashboard.php" class="btn btn-secondary ms-2">Back to Dashboard</a>
+                        <a href="../patient/dashboard.php" class="btn btn-secondary ms-2">Back to Dashboard</a>
                     <?php endif; ?>
                 </div>
             </div>

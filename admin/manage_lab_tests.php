@@ -17,23 +17,45 @@ if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] != 'admin') {
 
 $db = new Database();
 
+// Generate CSRF token
+$csrf_token = generate_csrf_token();
+
+$success_message = ""; // Initialize success message
+$error_message = "";   // Initialize error message
+$errors = [];          // Initialize errors array
+
 // Handle form submissions for adding, editing, and deleting lab tests
 if (isset($_POST['add_test'])) {
+    // Verify CSRF token
+    if (!verify_csrf_token()) {
+        die("CSRF token validation failed."); // Or handle error more gracefully
+    }
+
     $testName = sanitize_input($_POST['name']);
     $testDescription = sanitize_input($_POST['description']);
-    $testCost = sanitize_input($_POST['cost']);
+    $testCost = $_POST['cost']; // Do not sanitize cost yet, validate numerically
 
-    $success = $db->createLabTest($testName, $testDescription, $testCost); // Implement this in db.php
+    // Server-side validation
+    if (empty($testName)) {
+        $errors[] = "Test Name is required.";
+    }
+    if (!is_numeric($testCost)) {
+        $errors[] = "Cost must be a numeric value.";
+    }
 
-    if ($success) {
-        echo '<div class="alert alert-success">Lab test added successfully!</div>';
-    } else {
-        echo '<div class="alert alert-danger">Error adding lab test.</div>';
+    if (empty($errors)) {
+        $success = $db->createLabTest($testName, $testDescription, $testCost); // Implement this in db.php
+
+        if ($success) {
+            $success_message = 'Lab test added successfully!';
+        } else {
+            $error_message = 'Error adding lab test to database.'; // More specific error message
+        }
     }
 } elseif (isset($_POST['edit_test'])) {
-    // ... Handle lab test editing (similar to adding)
+    // ... (Handle lab test editing - you'll need to implement this in edit_lab_test.php) ...
 } elseif (isset($_POST['delete_test'])) {
-    // ... Handle lab test deletion (similar to adding)
+    // ... (Handle lab test deletion - you'll need to implement this in delete_lab_test.php) ...
 }
 
 // Fetch all lab tests
@@ -47,17 +69,36 @@ $labTests = $db->getAllLabTests(); // Implement this in db.php
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manage Lab Tests - Care Compass Connect</title>
     <link rel="stylesheet" href="../assets/css/bootstrap.min.css">
-    <!-- Add your custom styles if needed -->
+    <link rel="stylesheet" href="../assets/css/style.css">
 </head>
 <body>
+    <?php include('../includes/header.php'); ?>
+
     <div class="container">
         <h2>Manage Lab Tests</h2>
+
+        <?php if ($success_message): ?>
+            <div class="alert alert-success"><?= htmlspecialchars($success_message) ?></div>
+        <?php endif; ?>
+        <?php if ($error_message): ?>
+            <div class="alert alert-danger"><?= htmlspecialchars($error_message) ?></div>
+        <?php endif; ?>
+        <?php if (!empty($errors)): ?>
+            <div class="alert alert-danger">
+                <ul>
+                    <?php foreach ($errors as $error): ?>
+                        <li><?= htmlspecialchars($error) ?></li>
+                    <?php endforeach; ?>
+                </ul>
+            </div>
+        <?php endif; ?>
 
         <!-- Add Lab Test Form -->
         <div class="card mb-3">
             <div class="card-header">Add New Lab Test</div>
             <div class="card-body">
                 <form method="post">
+                    <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token) ?>">
                     <div class="mb-3">
                         <label for="name" class="form-label">Test Name:</label>
                         <input type="text" class="form-control" id="name" name="name" required>
@@ -79,36 +120,46 @@ $labTests = $db->getAllLabTests(); // Implement this in db.php
         <div class="card">
             <div class="card-header">Available Lab Tests</div>
             <div class="card-body">
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Name</th>
-                            <th>Description</th>
-                            <th>Cost</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php foreach ($labTests as $test): ?>
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
                             <tr>
-                                <td><?= $test['id'] ?></td>
-                                <td><?= $test['name'] ?></td>
-                                <td><?= $test['description'] ?></td>
-                                <td><?= $test['cost'] ?></td>
-                                <td>
-                                    <a href="edit_lab_test.php?id=<?= $test['id'] ?>" class="btn btn-sm btn-warning">Edit</a>
-                                    <a href="delete_lab_test.php?id=<?= $test['id'] ?>" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure?')">Delete</a>
-                                </td>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Description</th>
+                                <th>Cost</th>
+                                <th>Actions</th>
                             </tr>
-                        <?php endforeach; ?>
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            <?php if ($labTests): ?>
+                                <?php foreach ($labTests as $test): ?>
+                                    <tr>
+                                        <td><?= htmlspecialchars($test['id']) ?></td>
+                                        <td><?= htmlspecialchars($test['name']) ?></td>
+                                        <td><?= htmlspecialchars($test['description']) ?></td>
+                                        <td><?= htmlspecialchars($test['cost']) ?></td>
+                                        <td>
+                                            <a href="edit_lab_test.php?id=<?= $test['id'] ?>" class="btn btn-sm btn-warning">Edit</a>
+                                            <a href="delete_lab_test.php?id=<?= $test['id'] ?>" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure?')">Delete</a>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            <?php else: ?>
+                                <tr>
+                                    <td colspan="5" class="text-center">No lab tests available.</td>
+                                </tr>
+                            <?php endif; ?>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
 
-        <a href="admin/dashboard.php" class="btn btn-secondary mt-3">Back to Dashboard</a>
+        <a href="dashboard.php" class="btn btn-secondary mt-3">Back to Dashboard</a>
     </div>
+
+    <?php include('../includes/footer.php'); ?>
 
     <script src="../assets/js/bootstrap.bundle.min.js"></script>
 </body>

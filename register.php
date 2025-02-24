@@ -4,11 +4,22 @@ include('includes/config.php');
 include('includes/db.php');
 include('includes/functions.php');
 
+// Start session (if not already started)
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
+
 // Initialize error variable
 $errors = [];
 
 // Handle user registration form submission
 if (isset($_POST['register'])) {
+    // Verify CSRF token at the VERY BEGINNING of form processing
+    if (!verify_csrf_token()) {
+        // CSRF token verification failed!  Reject the request.
+        die("CSRF token validation failed."); // In production, handle this more gracefully (e.g., display error message)
+    }
+
     $fullname = sanitize_input($_POST['fullname']);
     $email = sanitize_input($_POST['email']);
     $password = $_POST['password'];
@@ -56,6 +67,9 @@ if (isset($_POST['register'])) {
         }
     }
 }
+
+// Generate CSRF token BEFORE displaying the form
+$csrf_token = generate_csrf_token();
 ?>
 
 <!DOCTYPE html>
@@ -178,6 +192,9 @@ if (isset($_POST['register'])) {
                             </div>
                         <?php endif; ?>
                         <form method="post" onsubmit="return validateForm()">
+                            <!-- **CSRF Token Field Added Here** -->
+                            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token) ?>">
+
                             <div class="mb-3">
                                 <label for="fullname" class="form-label">Full Name</label>
                                 <input type="text" class="form-control" id="fullname" name="fullname" required>

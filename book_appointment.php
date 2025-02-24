@@ -24,8 +24,17 @@ $branches = $db->getAllBranches();
 $branchId = $doctorId = $appointmentDate = $appointmentTime = $reason = '';
 $errors = [];
 
+// Generate CSRF token BEFORE displaying the form
+$csrf_token = generate_csrf_token();
+
 // Handle form submission
 if (isset($_POST['book_appointment'])) {
+    // Verify CSRF token at the VERY BEGINNING of form processing
+    if (!verify_csrf_token()) {
+        // CSRF token verification failed!  Reject the request.
+        die("CSRF token validation failed."); // Or display a user-friendly error message and exit. In a real app, redirect to error page.
+    }
+
     $branchId = $_POST['branch_id'];
     $doctorId = $_POST['doctor_id'];
     $appointmentDate = $_POST['appointment_date'];
@@ -223,6 +232,9 @@ if (isset($_POST['book_appointment'])) {
                     </div>
                 <?php endif; ?>
                 <form method="post">
+                    <!-- CSRF Token Field - IMPORTANT -->
+                    <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token) ?>">
+
                      <div class="mb-3">
                         <label for="branch" class="form-label">Select Branch:</label>
                         <select class="form-control <?php echo isset($errors['branch_id']) ? 'is-invalid' : ''; ?>" id="branch" name="branch_id" required>

@@ -17,8 +17,17 @@ if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] != 'staff') {
 
 $db = new Database();
 
+// Generate CSRF token BEFORE displaying the form
+$csrf_token = generate_csrf_token();
+
 // Handle form submission
 if (isset($_POST['update_result'])) {
+    // Verify CSRF token at the VERY BEGINNING of form processing
+    if (!verify_csrf_token()) {
+        // CSRF token verification failed!  Reject the request.
+        die("CSRF token validation failed."); // Or display a user-friendly error message and exit.
+    }
+
     $testResultId = $_POST['test_result_id'];
     $resultDetails = sanitize_input($_POST['result_details']);
     $status = $_POST['status'];
@@ -61,11 +70,13 @@ if (isset($_GET['id'])) {
         <h2>Update Test Result</h2>
 
         <form method="post">
+            <!-- ADD THIS HIDDEN INPUT FIELD for CSRF token -->
+            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token) ?>">
             <input type="hidden" name="test_result_id" value="<?= $testResult['id'] ?>">
 
             <div class="mb-3">
                 <label class="form-label">Patient:</label>
-                <input type="text" class="form-control" value="<?= $testResult['patient_name'] ?>" readonly>
+                <input type="text" class="form-control" value="<?= htmlspecialchars($testResult['patient_name']) ?>" readonly>
             </div>
             <div class="mb-3">
                 <label class="form-label">Test Name:</label>
@@ -73,7 +84,7 @@ if (isset($_GET['id'])) {
             </div>
             <div class="mb-3">
                 <label for="result_details" class="form-label">Result Details:</label>
-                <textarea class="form-control" id="result_details" name="result_details"><?= $testResult['result_details'] ?></textarea>
+                <textarea class="form-control" id="result_details" name="result_details"><?= htmlspecialchars($testResult['result_details']) ?></textarea>
             </div>
             <div class="mb-3">
                 <label for="status" class="form-label">Status:</label>

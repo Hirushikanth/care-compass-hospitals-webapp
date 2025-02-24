@@ -13,7 +13,7 @@
                     <li><a href="about_us.php" class="text-white">About Us</a></li> <!-- Section link - About Us section needed in homepage or separate page -->
                     <li><a href="#services" class="text-white">Services</a></li>
                     <li><a href="doctors.php" class="text-white">Doctors</a></li>
-                    <li><a href="#contact" class="text-white">Contact</a></li>
+                    <li><a href="contact.php" class="text-white">Contact</a></li>
                 </ul>
             </div>
             <div class="col-md-4">

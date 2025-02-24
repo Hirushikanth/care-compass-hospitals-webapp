@@ -25,8 +25,24 @@ if (!$userId) {
     exit;
 }
 
+// Fetch user data (for confirmation)
+$user = $db->getUserById($userId);
+
+if (!$user) {
+    echo "User not found.";
+    exit;
+}
+
+// Generate CSRF token
+$csrf_token = generate_csrf_token();
+
 // Handle user deletion
 if (isset($_POST['delete_user'])) {
+    // Verify CSRF token
+    if (!verify_csrf_token()) {
+        die("CSRF token validation failed."); // Or handle error more gracefully
+    }
+
     $success = $db->deleteUser($userId); // Implement this in db.php
 
     if ($success) {
@@ -35,14 +51,6 @@ if (isset($_POST['delete_user'])) {
     } else {
         $error_message = "Error deleting user.";
     }
-}
-
-// Fetch user data (for confirmation)
-$user = $db->getUserById($userId);
-
-if (!$user) {
-    echo "User not found.";
-    exit;
 }
 ?>
 
@@ -74,6 +82,7 @@ if (!$user) {
             margin-bottom: 1.5rem;
         }
         .page-header h2 {
+            color: white;
             font-size: 1.75rem;
             margin-bottom: 0;
             font-weight: 600;
@@ -141,6 +150,8 @@ if (!$user) {
             </div>
 
             <form method="post" class="mt-3">
+                <!-- CSRF Token Field -->
+                <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token) ?>">
                 <button type="submit" name="delete_user" class="btn btn-danger">
                     <i class="bi bi-trash me-1"></i> Yes, Delete User
                 </button>

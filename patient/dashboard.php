@@ -190,7 +190,7 @@ if (isset($_GET['logout'])) {
                                                 <td><?= htmlspecialchars($appointment['branch_name'] ?: 'N/A') ?></td>
                                                 <td><?= htmlspecialchars($appointment['status']) ?></td>
                                                 <td>
-                                                    <a href="view_appointment.php?id=<?= $appointment['id'] ?>" class="btn btn-sm btn-outline-primary">View</a>
+                                                    <a href="../staff/view_appointment.php?id=<?= $appointment['id'] ?>" class="btn btn-sm btn-outline-primary">View</a>
                                                 </td>
                                             </tr>
                                         <?php endforeach; ?>

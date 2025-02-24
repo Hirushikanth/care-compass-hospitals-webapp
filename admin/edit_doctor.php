@@ -36,8 +36,17 @@ if (!$doctor) {
 // Fetch all branches for the dropdown
 $branches = $db->getAllBranches(); // Fetch branches for branch selection dropdown
 
+// Generate CSRF token BEFORE displaying the form
+$csrf_token = generate_csrf_token();
+
 // Handle form submission
 if (isset($_POST['edit_doctor'])) {
+    // Verify CSRF token at the VERY BEGINNING of form processing
+    if (!verify_csrf_token()) {
+        // CSRF token verification failed!  Reject the request.
+        die("CSRF token validation failed."); // Or display a user-friendly error message and exit.
+    }
+
     $fullname = sanitize_input($_POST['fullname']);
     $email = sanitize_input($_POST['email']);
     $specialty = sanitize_input($_POST['specialty']);
@@ -108,6 +117,9 @@ if (isset($_POST['edit_doctor'])) {
             <h2 class="form-header">Edit Doctor</h2>
 
             <form method="post" onsubmit="return validateForm()">
+                <!-- CSRF Token Field -->
+                <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token) ?>">
+
                 <?php if (isset($_POST['edit_doctor']) && empty($errors) && isset($success) && $success): ?>
                     <div class="alert alert-success"><?= $success_message ?></div>
                 <?php endif; ?>
@@ -169,7 +181,7 @@ if (isset($_POST['edit_doctor'])) {
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../assets/js/bootstrap.bundle.min.js"></script>
     <script>
         function validateForm() {
             let isValid = true;

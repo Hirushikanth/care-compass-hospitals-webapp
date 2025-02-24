@@ -11,14 +11,23 @@ if (session_status() == PHP_SESSION_NONE) {
 
 // Check if the user is logged in and is a staff member
 if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] != 'staff') {
-    header("Location: ../login.php");
+    header("Location: login.php");
     exit;
 }
 
 $db = new Database();
 
+// Generate CSRF token BEFORE displaying the form
+$csrf_token = generate_csrf_token();
+
 // Handle form submission
 if (isset($_POST['order_test'])) {
+    // Verify CSRF token at the VERY BEGINNING of form processing
+    if (!verify_csrf_token()) {
+        // CSRF token verification failed!  Reject the request.
+        die("CSRF token validation failed."); // Or display a user-friendly error message and exit.
+    }
+
     $patientId = $_POST['patient_id'];
     $testId = $_POST['test_id'];
     $staffId = $_SESSION['user_id']; // Assuming logged-in staff is ordering
@@ -65,7 +74,7 @@ $labTests = $db->getAllLabTests();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Order Lab Test - Care Compass Connect</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../assets/css/bootstrap.min.css" rel="stylesheet">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
@@ -156,6 +165,9 @@ $labTests = $db->getAllLabTests();
                     <div class="alert alert-danger"><?= $error_message ?></div>
                 <?php endif; ?>
                 <form method="post" onsubmit="return validateForm()">
+                    <!-- ADD THIS HIDDEN INPUT FIELD for CSRF token -->
+                    <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token) ?>">
+
                     <div class="mb-3">
                         <label for="patient_id" class="form-label">Patient:</label>
                         <select class="form-control" id="patient_id" name="patient_id" required>
@@ -177,13 +189,13 @@ $labTests = $db->getAllLabTests();
                         <div id="test-id-error" class="text-danger"></div>
                     </div>
                     <button type="submit" name="order_test" class="btn btn-primary">Order Test</button>
-                    <a href="dashboard.php" class="btn btn-secondary ms-2">Back to Dashboard</a>
+                    <a href="dashboard.php" class="btn btn-secondary mt-3">Back to Dashboard</a>
                 </form>
             </div>
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../assets/js/bootstrap.bundle.min.js"></script>
     <script>
         function validateForm() {
             let isValid = true;

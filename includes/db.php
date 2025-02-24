@@ -937,4 +937,12 @@ class Database
             return false;
         }
     }
+
+    public function updateAppointmentStatusAndPrice($appointmentId, $status, $price)
+    {
+        $stmt = $this->connection->prepare("UPDATE appointments SET status = ?, price = ? WHERE id = ?");
+        $stmt->bind_param("sdi", $status, $price, $appointmentId); // "s" for status, "d" for price (decimal), "i" for appointmentId
+        $stmt->execute();
+        return $stmt->affected_rows > 0;
+    }
 }

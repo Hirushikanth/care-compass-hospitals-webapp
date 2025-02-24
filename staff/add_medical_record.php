@@ -17,8 +17,17 @@ if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] != 'staff') {
 
 $db = new Database();
 
+// Generate CSRF token BEFORE displaying the form
+$csrf_token = generate_csrf_token();
+
 // Handle form submission
 if (isset($_POST['add_record'])) {
+    // Verify CSRF token at the VERY BEGINNING of form processing
+    if (!verify_csrf_token()) {
+        // CSRF token verification failed!  Reject the request.
+        die("CSRF token validation failed."); // Or display a user-friendly error message and exit.
+    }
+
     $patientId = $_POST['patient_id'];
     $doctorId = $_SESSION['user_id']; // Assuming logged-in staff member is the doctor
     $diagnosis = sanitize_input($_POST['diagnosis']);
@@ -47,7 +56,7 @@ $patients = $db->getAllPatients(); // Implement this function in db.php
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Add Medical Record - Care Compass Connect</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../assets/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -106,7 +115,7 @@ $patients = $db->getAllPatients(); // Implement this function in db.php
         }
         .btn-secondary:hover, .btn-secondary:focus {
             background-color: #545b62;
-            border-color: #545b62;
+            border-color: #4e555b;
             box-shadow: 0 0 0 0.2rem rgba(108, 117, 125, 0.5);
         }
         .alert-success {
@@ -143,6 +152,9 @@ $patients = $db->getAllPatients(); // Implement this function in db.php
 
         <div class="form-card">
             <form method="post">
+                <!-- CSRF Token Field -->
+                <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token) ?>">
+
                 <div class="mb-3">
                     <label for="patient" class="form-label">Select Patient:</label>
                     <select class="form-control" id="patient" name="patient_id" required>
@@ -179,6 +191,6 @@ $patients = $db->getAllPatients(); // Implement this function in db.php
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../assets/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

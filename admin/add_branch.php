@@ -21,8 +21,17 @@ $db = new Database();
 $name = $address = $city = $phone = '';
 $errors = [];
 
+// Generate CSRF token BEFORE displaying the form
+$csrf_token = generate_csrf_token();
+
 // Handle form submission
 if (isset($_POST['add_branch'])) {
+    // Verify CSRF token at the VERY BEGINNING of form processing
+    if (!verify_csrf_token()) {
+        // CSRF token verification failed!  Reject the request.
+        die("CSRF token validation failed."); // Or display a user-friendly error message and exit. In production, redirect to an error page.
+    }
+
     $name = sanitize_input($_POST['name']);
     $address = sanitize_input($_POST['address']);
     $city = sanitize_input($_POST['city']);
@@ -77,6 +86,9 @@ if (isset($_POST['add_branch'])) {
                     </div>
                 <?php endif; ?>
                 <form method="post">
+                    <!-- ADD THIS HIDDEN INPUT FIELD for CSRF token -->
+                    <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token) ?>">
+
                     <div class="mb-3">
                         <label for="name" class="form-label">Branch Name</label>
                         <input type="text" class="form-control" id="name" name="name" value="<?= htmlspecialchars($name) ?>" required>
