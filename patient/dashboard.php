@@ -109,7 +109,7 @@ if (isset($_GET['logout'])) {
             transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out, color 0.2s ease-in-out;
         }
         .btn-outline-primary:hover, .btn-outline-primary:focus {
-            background-color: #cce8ed; /* Light tint */
+            background-color:rgba(204, 232, 237, 0); /* Light tint */
             border-color: #046A7A;
             color: #034e5a;
         }
@@ -178,7 +178,7 @@ if (isset($_GET['logout'])) {
                                             <th>Doctor</th>
                                             <th>Branch</th>
                                             <th>Status</th>
-                                            <th>Actions</th>
+                                            <th class="text-end">Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -191,6 +191,9 @@ if (isset($_GET['logout'])) {
                                                 <td><?= htmlspecialchars($appointment['status']) ?></td>
                                                 <td>
                                                     <a href="../staff/view_appointment.php?id=<?= $appointment['id'] ?>" class="btn btn-sm btn-outline-primary">View</a>
+                                                    <?php if ($appointment['status'] == 'confirmed' && $appointment['price'] > 0): ?>
+                                                        <a href="../view_bill.php?id=<?= $appointment['id'] ?>" class="btn btn-sm btn-outline-secondary ms-1">View Bill</a>
+                                                    <?php endif; ?>
                                                 </td>
                                             </tr>
                                         <?php endforeach; ?>

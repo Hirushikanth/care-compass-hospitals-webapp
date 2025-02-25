@@ -51,7 +51,7 @@ if ($appointment['patient_id'] != $_SESSION['user_id']) {
     <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body>
-    <?php include('../includes/header.php'); ?>
+    <?php include('includes/header.php'); ?>
 
     <div class="container py-5">
         <h2>Appointment Bill</h2>
