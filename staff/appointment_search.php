@@ -40,7 +40,7 @@ if ($searchQuery || $searchDate || $branchFilter) { // Include branchFilter in c
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Appointment Search - Care Compass Connect</title>
-    <link href="../assets/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="../assets/css/style.css">
 </head>
 <body>
@@ -125,6 +125,6 @@ if ($searchQuery || $searchDate || $branchFilter) { // Include branchFilter in c
     </main>
 
     <?php include('../includes/footer.php'); ?>
-    <script src="../assets/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js"></script>
 </body>
 </html>

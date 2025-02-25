@@ -95,7 +95,7 @@ if (isset($_POST['submit_query'])) {
         <a href="<?= ($_SESSION['user_role'] == 'patient') ? 'patient/dashboard.php' : 'staff/dashboard.php' ?>" class="btn btn-secondary mt-3">Back to Dashboard</a>
     </div>
 
-    <script src="assets/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js"></script>
     <script>
         function validateForm() {
             let isValid = true;

@@ -139,6 +139,6 @@ if (isset($_POST['edit_branch'])) {
 
     <?php include('../includes/footer.php'); ?>
 
-    <script src="../assets/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js"></script>
 </body>
 </html>
