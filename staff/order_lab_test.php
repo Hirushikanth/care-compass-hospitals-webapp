@@ -9,8 +9,8 @@ if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
 
-// Check if the user is logged in and is a staff member
-if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] != 'staff') {
+// Check if the user is logged in and is a staff member or Admin
+if (!isset($_SESSION['user_id']) || ($_SESSION['user_role'] != 'staff' && $_SESSION['user_role'] != 'admin')) {
     header("Location: login.php");
     exit;
 }
@@ -61,11 +61,20 @@ if (isset($_POST['order_test'])) {
     }
 }
 
-// Get all patients
+// Get all patients (from database)
 $patients = $db->getAllPatients();
 
-// Get all lab tests
-$labTests = $db->getAllLabTests();
+// --- Hardcoded Example Lab Tests ---
+$labTests = [
+    ['id' => 1, 'name' => 'Complete Blood Count (CBC)', 'description' => 'A common test to evaluate overall health.', 'cost' => 50.00],
+    ['id' => 2, 'name' => 'Blood Glucose Test', 'description' => 'Measures the level of glucose in your blood.', 'cost' => 30.00],
+    ['id' => 3, 'name' => 'Lipid Panel', 'description' => 'Checks cholesterol and triglyceride levels.', 'cost' => 75.00],
+    ['id' => 4, 'name' => 'Urinalysis', 'description' => 'A test of your urine to detect various diseases.', 'cost' => 40.00],
+    ['id' => 5, 'name' => 'Electrolyte Panel', 'description' => 'Measures the balance of electrolytes in your body.', 'cost' => 60.00],
+];
+// --- End of Hardcoded Example Lab Tests ---
+
+
 ?>
 
 <!DOCTYPE html>
@@ -182,7 +191,9 @@ $labTests = $db->getAllLabTests();
                         <label for="test_id" class="form-label">Lab Test:</label>
                         <select class="form-control" id="test_id" name="test_id" required>
                             <option value="">-- Select Test --</option>
-                            <?php foreach ($labTests as $test): ?>
+                            <?php
+                            // --- Loop through hardcoded lab tests ---
+                            foreach ($labTests as $test): ?>
                                 <option value="<?= $test['id'] ?>"><?= htmlspecialchars($test['name']) ?></option>
                             <?php endforeach; ?>
                         </select>
@@ -195,7 +206,7 @@ $labTests = $db->getAllLabTests();
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         function validateForm() {
             let isValid = true;

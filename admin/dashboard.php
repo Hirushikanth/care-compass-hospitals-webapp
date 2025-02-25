@@ -18,7 +18,16 @@ if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] != 'admin') {
 $db = new Database();
 
 // Get admin information
-$admin = $db->getAdminById($_SESSION['user_id']); // Assuming you have this function
+$admin = $db->getAdminById($_SESSION['user_id']);
+
+// Fetch data for Staff Dashboard Features (now included in Admin Dashboard)
+$appointmentsToday = $db->getAppointmentsForToday();
+$pendingTests = $db->getPendingTestResults();
+
+
+// Fetch Admin specific data (still needed for Admin Dashboard)
+$users = $db->getAllUsers();
+$doctors = $db->getAllDoctors();
 
 // Handle logout
 if (isset($_GET['logout'])) {
@@ -26,12 +35,6 @@ if (isset($_GET['logout'])) {
     header("Location: ../index.php");
     exit;
 }
-
-// Fetch all users
-$users = $db->getAllUsers(); // You have this function
-
-// Fetch all doctors
-$doctors = $db->getAllDoctors(); // Implement this function in db.php
 ?>
 
 <!DOCTYPE html>
@@ -142,7 +145,7 @@ $doctors = $db->getAllDoctors(); // Implement this function in db.php
         <div class="container">
             <div class="row align-items-center">
                 <div class="col-md-6">
-                    <h2>Welcome, <?= htmlspecialchars($admin['fullname']) ?>!</h2>
+                    <h2>Welcome, <?= htmlspecialchars($admin['fullname']) ?> (Admin)!</h2>  <!-- Added (Admin) to title -->
                 </div>
                 <div class="col-md-6 text-md-end">
                     <a href="?logout=true" class="btn btn-light">Logout</a>
@@ -153,6 +156,121 @@ $doctors = $db->getAllDoctors(); // Implement this function in db.php
 
     <main class="container">
         <div class="row g-4">
+
+            <!-- Combined Quick Actions (includes Staff and Admin actions) -->
+            <div class="col-12">
+                <div class="dashboard-card">
+                    <div class="dashboard-card-header">
+                        <h3 class="mb-0"><i class="bi bi-gear me-2"></i> Quick Actions</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex flex-wrap gap-2">
+                            <!-- Staff Quick Actions -->
+                            <a href="../book_appointment.php" class="btn btn-primary"><i class="bi bi-calendar-plus me-1"></i> Book Appointment</a>
+                            <a href="add_medical_record.php" class="btn btn-success"><i class="bi bi-file-medical-fill me-1"></i> Add Medical Record</a>
+                            <a href="../staff/order_lab_test.php" class="btn btn-primary"><i class="bi bi-clipboard-plus me-1"></i> Order Lab Test</a>
+                            <a href="view_queries.php" class="btn btn-info"><i class="bi bi-question-circle me-1"></i> View Queries</a> <!-- Staff can also view queries -->
+                            <!-- Admin Quick Actions -->
+                            <a href="add_user.php" class="btn btn-outline-primary"><i class="bi bi-person-plus-fill me-1"></i> Add User</a>
+                            <a href="add_doctor.php" class="btn btn-outline-primary"><i class="bi bi-stethoscope-fill me-1"></i> Add Doctor</a>
+                            <a href="add_branch.php" class="btn btn-outline-primary"><i class="bi bi-building-fill-add me-1"></i> Add Branch</a>
+                            <a href="manage_lab_tests.php" class="btn btn-outline-primary"><i class="bi bi-test-tube-fill me-1"></i> Manage Lab Tests</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- Today's Appointments (Staff Dashboard Feature) -->
+            <div class="col-md-8">
+                <div class="dashboard-card">
+                    <div class="dashboard-card-header">
+                        <h3 class="mb-0"><i class="bi bi-calendar-day me-2"></i> Today's Appointments</h3>
+                    </div>
+                    <div class="card-body">
+                        <?php if ($appointmentsToday): ?>
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Time</th>
+                                            <th>Patient</th>
+                                            <th>Doctor</th>
+                                            <th>Branch</th>
+                                            <th>Status</th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <?php foreach ($appointmentsToday as $appointment): ?>
+                                            <tr>
+                                                <td><?= htmlspecialchars($appointment['appointment_time']) ?></td>
+                                                <td><?= htmlspecialchars($appointment['patient_name']) ?></td>
+                                                <td><?= htmlspecialchars($appointment['doctor_name']) ?></td>
+                                                <td><?= htmlspecialchars($appointment['branch_name'] ?: 'N/A') ?></td>
+                                                <td><?= htmlspecialchars($appointment['status']) ?></td>
+                                                <td class="text-end">
+                                                    <a href="view_appointment.php?id=<?= $appointment['id'] ?>" class="btn btn-sm btn-info"><i class="bi bi-eye-fill"></i></a>
+                                                    <?php if ($appointment['status'] == 'pending'): ?>
+                                                        <a href="confirm_appointment.php?id=<?= $appointment['id'] ?>" class="btn btn-sm btn-primary"><i class="bi bi-check-lg"></i></a>
+                                                        <a href="cancel_appointment.php?id=<?= $appointment['id'] ?>" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to cancel?')"><i class="bi bi-x-lg"></i></a>
+                                                    <?php endif; ?>
+                                                </td>
+                                            </tr>
+                                        <?php endforeach; ?>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <?php else: ?>
+                            <p class="text-muted">No appointments scheduled for today.</p>
+                        <?php endif; ?>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- Pending Test Results (Staff Dashboard Feature) -->
+            <div class="col-md-4">
+                <div class="dashboard-card">
+                    <div class="dashboard-card-header">
+                        <h3 class="mb-0"><i class="bi bi-clock-history me-2"></i> Pending Test Results</h3>
+                    </div>
+                    <div class="card-body">
+                        <?php if ($pendingTests): ?>
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Patient</th>
+                                            <th>Test</th>
+                                            <th>Ordered On</th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <?php foreach ($pendingTests as $test): ?>
+                                            <tr>
+                                                <td><?= htmlspecialchars($test['id']) ?></td>
+                                                <td><?= htmlspecialchars($test['patient_name']) ?></td>
+                                                <td><?= htmlspecialchars($test['test_name']) ?></td>
+                                                <td><?= htmlspecialchars($test['result_date']) ?></td>
+                                                <td class="text-end">
+                                                    <a href="update_test_result.php?id=<?= $test['id'] ?>" class="btn btn-sm btn-warning"><i class="bi bi-pencil-square"></i></a>
+                                                </td>
+                                            </tr>
+                                        <?php endforeach; ?>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <?php else: ?>
+                            <p class="text-muted">No pending test results.</p>
+                        <?php endif; ?>
+                    </div>
+                </div>
+            </div>
+
+            <!-- User Management (Admin Dashboard Feature) -->
             <div class="col-md-6">
                 <div class="dashboard-card">
                     <div class="dashboard-card-header">
@@ -195,6 +313,7 @@ $doctors = $db->getAllDoctors(); // Implement this function in db.php
                 </div>
             </div>
 
+            <!-- Doctor Management (Admin Dashboard Feature) -->
             <div class="col-md-6">
                 <div class="dashboard-card">
                     <div class="dashboard-card-header">
@@ -240,6 +359,8 @@ $doctors = $db->getAllDoctors(); // Implement this function in db.php
                 </div>
             </div>
 
+
+            <!-- System Settings (Admin Dashboard Feature) -->
             <div class="col-md-6">
                 <div class="dashboard-card">
                     <div class="dashboard-card-header">
@@ -253,6 +374,7 @@ $doctors = $db->getAllDoctors(); // Implement this function in db.php
                 </div>
             </div>
 
+            <!-- Queries (Admin Dashboard Feature - Staff can also view queries) -->
             <div class="col-md-6">
                 <div class="dashboard-card">
                     <div class="dashboard-card-header">
@@ -265,6 +387,7 @@ $doctors = $db->getAllDoctors(); // Implement this function in db.php
                     </div>
                 </div>
             </div>
+
         </div>
     </main>
 
