@@ -110,7 +110,7 @@ if (isset($_POST['confirm_appointment'])) {
         $mail->Port       = MAILTRAP_SMTP_PORT;                // TCP port to connect to (Mailtrap - from config.php)
 
         // --- Recipients ---
-        $mail->setFrom('', 'Care Compass Hospitals'); // Replace with your *sending* email address (can be your Mailtrap email for testing)
+        $mail->setFrom('hi@demomailtrap.com', 'Care Compass Hospitals'); // Replace with your *sending* email address (can be your Mailtrap email for testing)
         $mail->addAddress($appointmentWithPrice['email'], $appointmentWithPrice['patient_name']);     // Add recipient (patient's email from appointment data)
 
         // --- Attachments (Attach the generated PDF bill) ---

@@ -534,12 +534,12 @@ class Database
             SELECT
                 a.*,
                 p.fullname as patient_name,
-                p.email as patient_email,  -- ADDED: Select patient's email and alias it as patient_email
+                p.email as email,  -- Changed alias to 'email' here
                 u.fullname as doctor_name,
                 doc.specialty as doctor_specialty,
                 b.name AS branch_name
             FROM appointments a
-            INNER JOIN users p ON a.patient_id = p.id  -- Join with users table (aliased as 'p') for patient info
+            INNER JOIN users p ON a.patient_id = p.id
             INNER JOIN doctors doc ON a.doctor_id = doc.id
             INNER JOIN users u ON doc.user_id = u.id
             LEFT JOIN branches b ON a.branch_id = b.id
