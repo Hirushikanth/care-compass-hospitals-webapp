@@ -169,10 +169,7 @@ if (isset($_GET['logout'])) {
                             <a href="../book_appointment.php" class="btn btn-primary"><i class="bi bi-calendar-plus me-1"></i> Book Appointment</a>
                             <a href="add_medical_record.php" class="btn btn-success"><i class="bi bi-file-medical-fill me-1"></i> Add Medical Record</a>
                             <a href="../staff/order_lab_test.php" class="btn btn-primary"><i class="bi bi-clipboard-plus me-1"></i> Order Lab Test</a>
-                            <a href="view_queries.php" class="btn btn-info"><i class="bi bi-question-circle me-1"></i> View Queries</a> <!-- Staff can also view queries -->
-                            <!-- Admin Quick Actions -->
-                            <a href="add_user.php" class="btn btn-outline-primary"><i class="bi bi-person-plus-fill me-1"></i> Add User</a>
-                            <a href="add_doctor.php" class="btn btn-outline-primary"><i class="bi bi-stethoscope-fill me-1"></i> Add Doctor</a>
+                            <a href="view_feedback.php" class="btn btn-info"><i class="bi bi-question-circle me-1"></i> View Feedback</a> <!-- Staff can also view queries -->
                             <a href="add_branch.php" class="btn btn-outline-primary"><i class="bi bi-building-fill-add me-1"></i> Add Branch</a>
                             <a href="manage_lab_tests.php" class="btn btn-outline-primary"><i class="bi bi-test-tube-fill me-1"></i> Manage Lab Tests</a>
                         </div>

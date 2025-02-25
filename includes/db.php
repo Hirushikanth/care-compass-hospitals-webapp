@@ -946,4 +946,38 @@ class Database
         $stmt->execute();
         return $stmt->affected_rows > 0;
     }
+
+    public function createFeedback($userId, $fullname, $email, $feedbackText, $rating = null) {
+        $stmt = $this->connection->prepare("
+            INSERT INTO feedback (user_id, fullname, email, feedback_text, rating)
+            VALUES (?, ?, ?, ?, ?)
+        ");
+        $stmt->bind_param("isssi", $userId, $fullname, $email, $feedbackText, $rating); // "isssi" - integer, string, string, string, integer
+        $stmt->execute();
+    
+        if ($stmt->error) {
+            error_log("Database query error in createFeedback: " . $stmt->error);
+            return false; // Indicate query failure
+        }
+    
+        return $stmt->affected_rows > 0;
+    }
+    
+    public function getAllFeedback() {
+        $stmt = $this->connection->prepare("
+            SELECT f.*, u.fullname as submitted_by_username 
+            FROM feedback f
+            LEFT JOIN users u ON f.user_id = u.id
+            ORDER BY f.created_at DESC
+        ");
+        $stmt->execute();
+    
+        if ($stmt->error) {
+            error_log("Database query error in getAllFeedback: " . $stmt->error);
+            return false; // Indicate query failure
+        }
+    
+        $result = $stmt->get_result();
+        return $result->fetch_all(MYSQLI_ASSOC);
+    }
 }
