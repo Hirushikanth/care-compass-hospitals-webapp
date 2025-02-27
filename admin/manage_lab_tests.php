@@ -140,8 +140,8 @@ $labTests = $db->getAllLabTests(); // Implement this in db.php
                                         <td><?= htmlspecialchars($test['description']) ?></td>
                                         <td><?= htmlspecialchars($test['cost']) ?></td>
                                         <td>
-                                            <a href="edit_lab_test.php?id=<?= $test['id'] ?>" class="btn btn-sm btn-warning">Edit</a>
-                                            <a href="delete_lab_test.php?id=<?= $test['id'] ?>" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure?')">Delete</a>
+                                            <a href="../edit_lab_test.php?id=<?= $test['id'] ?>" class="btn btn-sm btn-warning">Edit</a>
+                                            <a href="../delete_lab_test.php?id=<?= $test['id'] ?>" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure?')">Delete</a>
                                         </td>
                                     </tr>
                                 <?php endforeach; ?>

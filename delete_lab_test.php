@@ -1,8 +1,8 @@
 <?php
 // Include necessary files
-include('../includes/config.php');
-include('../includes/db.php');
-include('../includes/functions.php');
+include('includes/config.php');
+include('includes/db.php');
+include('includes/functions.php');
 
 // Start session
 if (session_status() == PHP_SESSION_NONE) {

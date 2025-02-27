@@ -50,7 +50,7 @@ a:hover {
 
 /* Hero Section */
 .hero-section {
-    background: linear-gradient(rgba(4, 106, 122, 0.6), rgba(4, 106, 122, 0.1)), url('../assets/images/Hero.jpg');
+    background: linear-gradient(rgba(4, 106, 122, 0.6), rgba(4, 106, 122, 0.1)), url('../images/Hero.jpg');
     background-size: cover;
     background-position: center;
     color: white;

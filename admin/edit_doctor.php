@@ -121,7 +121,7 @@ if (isset($_POST['edit_doctor'])) {
                 <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token) ?>">
 
                 <?php if (isset($_POST['edit_doctor']) && empty($errors) && isset($success) && $success): ?>
-                    <div class="alert alert-success"><?= $success_message ?></div>
+                    <div class="alert alert-success"><?= $success_message ?></div> 
                 <?php endif; ?>
                 <?php if (!empty($errors)): ?>
                     <div class="alert alert-danger">
