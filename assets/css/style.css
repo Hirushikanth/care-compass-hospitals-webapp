@@ -924,6 +924,20 @@ a:hover {
     transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out;
 }
 
+.location-card {
+    border: 1px solid #ddd; /* Example border */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* Example shadow */
+}
+
+.location-card .card-body {
+    padding: 20px; /* Example padding */
+}
+
+.location-card h3 {
+    margin-bottom: 15px; /* Example margin */
+    color: #007bff; /* Example color */
+}
+
 .btn-danger:hover, .btn-danger:focus { /* Custom danger button hover/focus style */
     background-color: #bb2d3b;
     border-color: #b2242f;

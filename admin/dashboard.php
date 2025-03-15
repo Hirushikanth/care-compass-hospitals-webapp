@@ -71,6 +71,9 @@ if (isset($_GET['logout'])) {
             box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.05);
             transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
             overflow: hidden;
+            margin-bottom: 30px;
+            max-height: 600px;
+            overflow-y: auto;
         }
         .dashboard-card:hover {
             transform: scale(1.01);
@@ -167,7 +170,7 @@ if (isset($_GET['logout'])) {
                         <div class="d-flex flex-wrap gap-2">
                             <!-- Staff Quick Actions -->
                             <a href="../book_appointment.php" class="btn btn-primary"><i class="bi bi-calendar-plus me-1"></i> Book Appointment</a>
-                            <a href="add_medical_record.php" class="btn btn-success"><i class="bi bi-file-medical-fill me-1"></i> Add Medical Record</a>
+                            <a href="../staff/add_medical_record.php" class="btn btn-success"><i class="bi bi-file-medical-fill me-1"></i> Add Medical Record</a>
                             <a href="../staff/order_lab_test.php" class="btn btn-primary"><i class="bi bi-clipboard-plus me-1"></i> Order Lab Test</a>
                             <a href="view_feedback.php" class="btn btn-info"><i class="bi bi-question-circle me-1"></i> View Feedback</a> <!-- Staff can also view queries -->
                             <a href="add_branch.php" class="btn btn-outline-primary"><i class="bi bi-building-fill-add me-1"></i> Add Branch</a>

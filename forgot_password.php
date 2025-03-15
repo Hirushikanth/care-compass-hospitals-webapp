@@ -86,6 +86,7 @@ if (isset($_POST['reset_request'])) {
             width: 100%;
             max-width: 400px;
             transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+            margin: 20px auto;
         }
         .forgot-password-card:hover {
             transform: scale(1.01);

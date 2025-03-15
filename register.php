@@ -96,6 +96,7 @@ $csrf_token = generate_csrf_token();
             width: 100%;
             max-width: 500px;
             transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+            margin: 20px auto;
         }
         .register-card:hover {
             transform: scale(1.01);

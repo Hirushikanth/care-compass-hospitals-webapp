@@ -22,6 +22,7 @@ if (isset($_SESSION['user_id'])) {
         } elseif ($_SESSION['user_role'] == 'staff') {
             $redirectUrl = "staff/dashboard.php";
         }
+        
 
         if ($redirectUrl) {
             header("Location: " . $redirectUrl);
@@ -64,7 +65,8 @@ if (isset($_POST['login'])) {
         if ($user && password_verify($password, $user['password'])) {
             // Set session variables
             $_SESSION['user_id'] = $user['id'];
-            $_SESSION['user_role'] = $user['user_type']; // Assuming 'user_type' holds the role in your database
+            $_SESSION['user_role'] = $user['user_type'];
+            error_log("Login: Session variables set - user_id: " . $_SESSION['user_id'] . ", user_role: " . $_SESSION['user_role']);
 
             // Redirect to appropriate dashboard based on user role using a variable
             $redirectUrl = '';
@@ -117,6 +119,7 @@ if (isset($_POST['login'])) {
             width: 100%;
             max-width: 450px; /* Adjust max width for better spacing */
             transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+            margin: 20px auto;
         }
         .login-card:hover {
             transform: scale(1.01);

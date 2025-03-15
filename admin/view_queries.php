@@ -93,6 +93,7 @@ $queries = $db->getAllQueries(); // Implement this in db.php
             border-top-right-radius: 0.75rem;
         }
         .dashboard-card-header h2 {
+            color: white;
             font-size: 1.5rem;
             margin-bottom: 0;
             font-weight: 600;
@@ -160,6 +161,15 @@ $queries = $db->getAllQueries(); // Implement this in db.php
             padding: 0.75rem 1rem;
             margin-bottom: 1rem;
             border-radius: 0.3rem;
+        }
+
+        .container {
+            max-width: 1080px;
+            margin-left: auto;
+            margin-right: auto;
+            margin-top: 8rem;
+            padding-left: 15px;
+            padding-right: 15px;
         }
     </style>
 </head>

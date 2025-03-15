@@ -42,14 +42,51 @@ if ($searchQuery || $searchDate || $branchFilter) { // Include branchFilter in c
     <title>Appointment Search - Care Compass Connect</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="../assets/css/style.css">
+    <style>
+        /* --- Booking Card Style (from book_appointment.php) - Ideally move to style.css --- */
+        .booking-card {
+            background-color: #fff;
+            border-radius: 0.75rem;
+            box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.05);
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+            overflow: hidden;
+            max-width: 700px; /* Adjust max-width as needed */
+            margin: auto; /* Center card on page */
+            margin-bottom: 2rem; /* Add some margin below */
+        }
+        .booking-card:hover {
+            transform: scale(1.01);
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.07);
+        }
+        .card-body { /* Reusing card body style from book_appointment.php - ensure consistent padding in style.css */
+            padding: 1.5rem;
+        }
+
+        .booking-card-header h2 {
+            color: white;
+            font-size: 1.5rem;
+            margin-bottom: 0;
+            font-weight: 600;
+        }
+
+        .booking-card-header {
+            background-color: #046A7A;
+            color: white;
+            padding: 1rem;
+            border-top-left-radius: 0.75rem;
+            border-top-right-radius: 0.75rem;
+        }
+    </style>
 </head>
 <body>
-    <?php include('../includes/header.php'); ?>
+    <?php include('../includes/header_user.php'); ?>
 
     <main class="container">
-        <div class="search-card">
-            <div class="search-card-body">
-                <h2 class="mb-4">Appointment Search</h2>
+        <div class="booking-card">  <!-- ADDED: booking-card wrapper -->
+            <div class="card-body">  <!-- ADDED: card-body wrapper -->
+                <div class="booking-card-header">
+                    <h2 class="mb-4">Appointment Search</h2>
+                </div>
                 <form method="get" class="mb-4">
                     <div class="row g-3 align-items-end">
                         <div class="col-md-4">
@@ -120,8 +157,8 @@ if ($searchQuery || $searchDate || $branchFilter) { // Include branchFilter in c
                 <div class="back-link">
                     <a href="dashboard.php" class="btn btn-secondary"><i class="bi bi-arrow-left"></i> Back to Dashboard</a>
                 </div>
-            </div>
-        </div>
+            </div> <!-- ADDED: closing card-body -->
+        </div>     <!-- ADDED: closing booking-card -->
     </main>
 
     <?php include('../includes/footer.php'); ?>

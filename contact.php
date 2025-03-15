@@ -86,8 +86,6 @@ if (isset($_POST['submit_contact_form'])) {
 </head>
 <body>
 
-    <?php include('includes/header.php'); ?>
-
     <!-- Contact Header -->
     <header class="contact-header">
         <div class="container">

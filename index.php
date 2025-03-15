@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -74,7 +73,7 @@
     </section>
 
     <!-- Featured Services -->
-    <section class="py-5" id="doctors"> <!-- Added id for section linking -->
+    <section class="py-5" id="departments"> <!-- Added id for section linking -->
         <div class="container">
             <h2 class="text-center mb-5">Our Specialized Departments</h2>
             <div class="row g-4 justify-content-center"> <!-- Center featured services cards -->
@@ -155,6 +154,42 @@
                     <h3>Meet Our Experienced Doctors</h3>
                     <p>Our team of highly skilled and compassionate doctors are dedicated to providing the best care.</p>
                 </div>
+
+                <!-- Location Cards -->
+                <div class="col-md-4">
+                    <div class="card facility-card location-card h-100">
+                        <div class="card-body text-center">
+                            <i class="bi bi-geo-alt-fill display-4 mb-3"></i>
+                            <h3>Colombo Branch</h3>
+                            <p>Find us in the heart of Colombo for accessible healthcare services.</p>
+                            <a href="https://maps.app.goo.gl/HHgvkKU8Bi6LSYrm8" class="btn btn-outline-primary" target="_blank">View on Map</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="card facility-card location-card h-100">
+                        <div class="card-body text-center">
+                            <i class="bi bi-geo-alt-fill display-4 mb-3"></i>
+                            <h3>Kandy Branch</h3>
+                            <p>Serving the central province from our Kandy branch.</p>
+                            <a href="https://maps.app.goo.gl/WjNdGzfQkwfuvNB6A" class="btn btn-outline-primary" target="_blank">View on Map</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="card facility-card location-card h-100">
+                        <div class="card-body text-center">
+                            <i class="bi bi-geo-alt-fill display-4 mb-3"></i>
+                            <h3>Kurunegala Branch</h3>
+                            <p>Extending our care to the North Western Province in Kurunegala.</p>
+                            <a href="https://maps.app.goo.gl/b2HALSMSpPCfoixZA" class="btn btn-outline-primary" target="_blank">View on Map</a>
+                        </div>
+                    </div>
+                </div>
+                <!-- End Location Cards -->
+
             </div>
         </div>
     </section>

@@ -127,27 +127,6 @@ $doctors = $db->getAllDoctors();
 </head>
 <body>
 
-    <!-- Navigation (Assuming you have a consistent navigation, reuse your homepage's nav or create a general one) -->
-    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
-        <div class="container">
-            <a class="navbar-brand" href="index.php">
-                <img src="assets/images/Logo.png" alt="CareCompass Logo" height="50">
-            </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item"><a class="nav-link" href="index.php#services">Services</a></li>
-                    <li class="nav-item"><a class="nav-link" href="doctors.php">Doctors</a></li>
-                    <li class="nav-item"><a class="nav-link" href="index.php#facilities">Facilities</a></li>
-                    <li class="nav-item"><a class="nav-link" href="index.php#contact">Contact</a></li>
-                    <li class="nav-item"><a class="btn btn-primary btn-sm ms-2" href="login.php">Login</a></li>
-                </ul>
-            </div>
-        </div>
-    </nav>
-
     <!-- Doctors Header -->
     <header class="doctors-header">
         <div class="container">
@@ -182,37 +161,7 @@ $doctors = $db->getAllDoctors();
         </div>
     </section>
 
-    <!-- Footer (Assuming you have a consistent footer, reuse your homepage's footer) -->
-    <footer class="footer py-5" id="contact">
-        <div class="container">
-            <div class="row g-4">
-                <div class="col-md-4">
-                    <h4>Contact Us</h4>
-                    <p><i class="bi bi-geo-alt"></i> 123 Healthcare Ave, Medical City</p>
-                    <p><i class="bi bi-telephone"></i> 1-800-CARE (2273)</p>
-                    <p><i class="bi bi-envelope"></i> info@carecompass.com</p>
-                </div>
-                <div class="col-md-4">
-                    <h4>Quick Links</h4>
-                    <ul class="list-unstyled">
-                        <li><a href="index.php#about" class="text-white">About Us</a></li>
-                        <li><a href="index.php#services" class="text-white">Services</a></li>
-                        <li><a href="doctors.php" class="text-white">Doctors</a></li>
-                        <li><a href="index.php#contact" class="text-white">Contact</a></li>
-                    </ul>
-                </div>
-                <div class="col-md-4">
-                    <h4>Connect With Us</h4>
-                    <div class="d-flex gap-3">
-                        <a href="#" class="text-white"><i class="bi bi-facebook"></i></a>
-                        <a href="#" class="text-white"><i class="bi bi-twitter"></i></a>
-                        <a href="#" class="text-white"><i class="bi bi-linkedin"></i></a>
-                        <a href="#" class="text-white"><i class="bi bi-instagram"></i></a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </footer>
+    <?php> include('includes/footer.php'); ?>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 

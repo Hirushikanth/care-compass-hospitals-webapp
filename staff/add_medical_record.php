@@ -10,7 +10,7 @@ if (session_status() == PHP_SESSION_NONE) {
 }
 
 // Check if the user is logged in and is a staff member
-if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] != 'staff') {
+if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] != 'staff' && $_SESSION['user_role'] != 'admin') {
     header("Location: ../login.php");
     exit;
 }

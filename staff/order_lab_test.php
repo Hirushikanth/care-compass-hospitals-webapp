@@ -200,7 +200,7 @@ $labTests = [
                         <div id="test-id-error" class="text-danger"></div>
                     </div>
                     <button type="submit" name="order_test" class="btn btn-primary">Order Test</button>
-                    <a href="dashboard.php" class="btn btn-secondary mt-3">Back to Dashboard</a>
+                    <a href="dashboard.php" class="btn btn-secondary">Back to Dashboard</a>
                 </form>
             </div>
         </div>

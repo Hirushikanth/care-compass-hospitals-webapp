@@ -31,7 +31,7 @@ $appointments = $db->getAllAppointments(); // You have this function in db.php
     <link rel="stylesheet" href="../assets/css/style.css"> <!-- Link to your main stylesheet -->
 </head>
 <body>
-    <?php include('../includes/header.php'); ?>
+    <?php include('../includes/header_user.php'); ?>
 
     <div class="container py-5">
         <h2 class="mb-4">All Appointments</h2>

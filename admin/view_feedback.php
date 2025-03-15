@@ -32,7 +32,7 @@ $feedbackItems = $db->getAllFeedback();
     <link rel="stylesheet" href="../assets/css/style.css">
 </head>
 <body>
-    <?php include('../includes/header.php'); ?>
+    <?php include('../includes/header_user.php'); ?>
 
     <div class="container py-5">
         <h2 class="mb-4">Patient Feedback</h2>

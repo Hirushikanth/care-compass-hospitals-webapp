@@ -137,6 +137,7 @@ if (isset($_POST['book_appointment'])) {
             overflow: hidden;
             max-width: 700px;
             margin: auto;
+            margin-bottom: 3rem;
         }
         .booking-card:hover {
             transform: scale(1.01);
@@ -299,6 +300,9 @@ if (isset($_POST['book_appointment'])) {
 
                     <div class="d-grid">
                         <button type="submit" name="book_appointment" class="btn btn-primary">Book Appointment</button>
+                    </div>
+                    <div>
+                    <a href="<?= ($_SESSION['user_role'] == 'patient') ? 'patient/dashboard.php' : 'staff/dashboard.php' ?>" class="btn btn-secondary" style="margin-top: 1rem;">Back to Dashboard</a>
                     </div>
                 </form>
             </div>
